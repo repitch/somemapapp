@@ -1,16 +1,21 @@
 package com.bobin.somemapapp.ui.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
+import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bobin.somemapapp.R;
+import com.bobin.somemapapp.presenter.MapPresenter;
+import com.bobin.somemapapp.ui.view.MapView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,7 +23,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapFragment extends MvpAppCompatFragment implements OnMapReadyCallback {
+public class MapFragment
+        extends MvpAppCompatFragment
+        implements OnMapReadyCallback, MapView {
+
+    @InjectPresenter
+    MapPresenter presenter;
+
     private GoogleMap map;
 
     @Nullable
@@ -50,5 +61,16 @@ public class MapFragment extends MvpAppCompatFragment implements OnMapReadyCallb
         LatLng sydney = new LatLng(-34, 151);
         map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    @Override
+    public void showDialog(String title, String text) {
+        Context context = getContext();
+        if (context == null)
+            return;
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(text)
+                .show();
     }
 }
