@@ -45,21 +45,22 @@ public class PointsCacheImpl implements PointsCache {
     @Nullable
     @Override
     public List<DepositionPoint> getPointsOrNull(double latitude, double longitude, int radius) {
-        PointsCircle outerCircle = findOuterCircleOrNull(latitude, longitude, radius);
+        PointsCircle targetCircle = new PointsCircle(latitude, longitude, radius);
+        PointsCircle outerCircle = findOuterCircleOrNull(targetCircle);
         if (outerCircle == null)
             return null;
         if (timeExpired(outerCircle)) {
             terminateCircleAndNestedPoints(outerCircle);
             return null;
         }
-        return loadPointsFromCircle(outerCircle, latitude, longitude, radius);
+        return loadPointsFromCircle(outerCircle, targetCircle);
         // если нашли круг, в который полностью содержит наш круг и он не старый, то возвращаем его узлы
         // если он старый, то удаляем его и возвращаем null
     }
 
     @SuppressWarnings("ConstantConditions")
     private List<DepositionPoint> loadPointsFromCircle(PointsCircle outerCircle,
-                                                       double latitude, double longitude, int radius) {
+                                                       PointsCircle targetCircle) {
         Realm realm = Realm.getDefaultInstance();
 
         RealmResults<PointsToCircle> links = realm.where(PointsToCircle.class)
@@ -70,9 +71,15 @@ public class PointsCacheImpl implements PointsCache {
         for (int i = 0; i < links.size(); ++i)
             ids[i] = links.get(i).getDepositionPointExternalId();
 
-        return realm.where(DepositionPoint.class)
+        RealmResults<DepositionPoint> allPoints = realm.where(DepositionPoint.class)
                 .in("externalId", ids)
                 .findAll();
+
+        List<DepositionPoint> subSet = new ArrayList<>();
+        for (DepositionPoint point : allPoints)
+            if (pointInsideCircle(targetCircle, point))
+                subSet.add(point);
+        return subSet;
     }
 
     private List<PointsToCircle> createPointsToCircleLinks(PointsCircle pointsCircle, List<DepositionPoint> points) {
@@ -114,8 +121,7 @@ public class PointsCacheImpl implements PointsCache {
     }
 
     @Nullable
-    private PointsCircle findOuterCircleOrNull(double latitude, double longitude, int radius) {
-        PointsCircle targetCircle = new PointsCircle(latitude, longitude, radius);
+    private PointsCircle findOuterCircleOrNull(PointsCircle targetCircle) {
         List<PointsCircle> allCircles = database.getAll(PointsCircle.class);
         for (PointsCircle circle : allCircles) {
             if (circleAIsInsideCircleB(targetCircle, circle))
@@ -143,5 +149,9 @@ public class PointsCacheImpl implements PointsCache {
     private boolean timeExpired(PointsCircle circle) {
         long now = System.currentTimeMillis();
         return now - circle.getTimestamp() > 1000 * 60 * 10;
+    }
+
+    private boolean pointInsideCircle(PointsCircle circle, DepositionPoint point) {
+        return GoogleMapUtils.distanceBetween(circle.getCenterMapCoordinates(), point.getMapCoordinates()) < circle.getRadius();
     }
 }

@@ -1,5 +1,7 @@
 package com.bobin.somemapapp.model.tables;
 
+import com.bobin.somemapapp.model.MapCoordinates;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -11,6 +13,10 @@ public class DepositionPoint extends RealmObject {
     private double longitude;
     private String workHours;
     private String fullAddress;
+
+    public MapCoordinates getMapCoordinates() {
+        return new MapCoordinates(latitude, longitude);
+    }
 
     public String getExternalId() {
         return externalId;

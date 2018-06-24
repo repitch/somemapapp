@@ -1,5 +1,7 @@
 package com.bobin.somemapapp.model.tables;
 
+import com.bobin.somemapapp.model.MapCoordinates;
+
 import java.util.UUID;
 
 import io.realm.RealmObject;
@@ -24,6 +26,10 @@ public class PointsCircle extends RealmObject {
     private double centerLatitude;
     private double centerLongitude;
     private int radius;
+
+    public MapCoordinates getCenterMapCoordinates() {
+        return new MapCoordinates(centerLatitude, centerLongitude);
+    }
 
     public String getId() {
         return id;
