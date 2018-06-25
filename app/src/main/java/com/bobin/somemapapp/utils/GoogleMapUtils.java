@@ -5,8 +5,12 @@ import android.location.Location;
 import com.bobin.somemapapp.model.CameraBounds;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.response.LocationResponse;
+import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class GoogleMapUtils {
     public static LatLng toLatLng(MapCoordinates coordinates) {
@@ -37,6 +41,19 @@ public final class GoogleMapUtils {
                 pointB.getLongitude());
     }
 
+    public static List<DepositionPoint> pointsFromCircle(PointsCircle circle, List<DepositionPoint> points) {
+        if (points == null)
+            return new ArrayList<>(0);
+        List<DepositionPoint> result = new ArrayList<>();
+        for (DepositionPoint point : points)
+            if (pointInsideCircle(circle, point))
+                result.add(point);
+        return result;
+    }
+
+    private static boolean pointInsideCircle(PointsCircle circle, DepositionPoint point) {
+        return distanceBetween(circle.getCenterMapCoordinates(), point.getMapCoordinates()) < circle.getRadius();
+    }
 
     public static PointsCircle toCircle(CameraBounds bounds) {
         float r1 = GoogleMapUtils.distanceBetween(bounds.getLeftTop(), bounds.getCenter());

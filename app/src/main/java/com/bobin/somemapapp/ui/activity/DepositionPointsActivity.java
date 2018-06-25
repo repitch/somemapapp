@@ -12,7 +12,7 @@ public class DepositionPointsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deposition_points);
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(R.id.container, new MapFragment())

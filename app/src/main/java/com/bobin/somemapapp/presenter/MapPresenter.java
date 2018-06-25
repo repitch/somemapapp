@@ -2,17 +2,16 @@ package com.bobin.somemapapp.presenter;
 
 import android.Manifest;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.util.Pair;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.bobin.somemapapp.infrastructure.DepositionPointsService;
+import com.bobin.somemapapp.infrastructure.DepositionPointsServiceImpl;
 import com.bobin.somemapapp.model.CameraBounds;
-import com.bobin.somemapapp.model.response.DepositionPointResponse;
-import com.bobin.somemapapp.model.response.TinkoffApiResponse;
+import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
-import com.bobin.somemapapp.network.api.TinkoffApi;
 import com.bobin.somemapapp.network.api.TinkoffApiFactory;
+import com.bobin.somemapapp.storage.PointsCacheImpl;
 import com.bobin.somemapapp.ui.view.MapView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -21,7 +20,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -30,15 +28,18 @@ import io.reactivex.subjects.PublishSubject;
 
 @InjectViewState
 public class MapPresenter extends MvpPresenter<MapView> {
+    private final PointsCacheImpl pointsCache;
     private CompositeDisposable compositeDisposable;
-    private TinkoffApi tinkoffApi;
     private PublishSubject<CameraBounds> cameraBoundsPublishSubject;
-    private PointsCircle currentCircle;
+    private DepositionPointsService depositionPointsService;
+    private CircleWithPoints currentScreenData;
 
     public MapPresenter() {
         compositeDisposable = new CompositeDisposable();
-        tinkoffApi = new TinkoffApiFactory().createApi();
         cameraBoundsPublishSubject = PublishSubject.create();
+        pointsCache = new PointsCacheImpl();
+        depositionPointsService = new DepositionPointsServiceImpl(new TinkoffApiFactory().createApi(),
+                pointsCache);
     }
 
     public void mapIsReady(FragmentActivity activity) {
@@ -56,28 +57,35 @@ public class MapPresenter extends MvpPresenter<MapView> {
         super.onFirstViewAttach();
         Disposable subscribe = cameraBoundsPublishSubject
                 .debounce(1L, TimeUnit.SECONDS)
-                .filter(x -> currentCircle == null || !currentCircle.contains(GoogleMapUtils.toCircle(x)))
-                .flatMap(x -> getDepositionPoints(x).subscribeOn(Schedulers.io()))
+                .filter(this::needLoadPoints)
+                .flatMap(x -> getDepositionPoints(x).observeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(x -> {
-                    currentCircle = x.circle;
                     getViewState().showPins(x.points);
+                    currentScreenData = x;
+                }, t -> {
                 });
         compositeDisposable.add(subscribe);
+    }
+
+    private boolean needLoadPoints(CameraBounds bounds) {
+        if (currentScreenData == null)
+            return true;
+
+        PointsCircle circle = GoogleMapUtils.toCircle(bounds);
+
+        List<DepositionPoint> pointsFromCircle =
+                GoogleMapUtils.pointsFromCircle(circle, currentScreenData.points);
+
+        return !currentScreenData.circle.contains(circle) || pointsFromCircle.size() == 0;
     }
 
     private Observable<CircleWithPoints> getDepositionPoints(CameraBounds bounds) {
         final PointsCircle pointsCircle = GoogleMapUtils.toCircle(bounds);
 
-        return tinkoffApi.getDepositionPoints(
-                pointsCircle.getCenterLatitude(),
-                pointsCircle.getCenterLongitude(),
-                pointsCircle.getRadius())
-                .toObservable()
-                .flatMapIterable(TinkoffApiResponse::getPayload)
-                .toList()
-                .toObservable()
-                .map(x -> new CircleWithPoints(pointsCircle, x));
+        return depositionPointsService.getPoints(pointsCircle)
+                .map(x -> new CircleWithPoints(pointsCircle, x))
+                .toObservable();
     }
 
     @Override
@@ -87,15 +95,14 @@ public class MapPresenter extends MvpPresenter<MapView> {
     }
 
     public void mapCameraStops(CameraBounds bounds) {
-        Log.d("MapPresenter", "mapCameraStops");
         cameraBoundsPublishSubject.onNext(bounds);
     }
 
     private static class CircleWithPoints {
         PointsCircle circle;
-        List<DepositionPointResponse> points;
+        List<DepositionPoint> points;
 
-        CircleWithPoints(PointsCircle circle, List<DepositionPointResponse> points) {
+        CircleWithPoints(PointsCircle circle, List<DepositionPoint> points) {
             this.circle = circle;
             this.points = points;
         }

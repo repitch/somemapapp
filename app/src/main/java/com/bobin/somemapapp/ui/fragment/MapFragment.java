@@ -17,10 +17,11 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.CameraBounds;
 import com.bobin.somemapapp.model.MapCoordinates;
-import com.bobin.somemapapp.model.response.DepositionPointResponse;
+import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.presenter.MapPresenter;
 import com.bobin.somemapapp.ui.view.MapView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -76,6 +77,10 @@ public class MapFragment
 
         map.setOnCameraIdleListener(this);
         map.setOnCameraMoveCanceledListener(this);
+
+        LatLng sydney = new LatLng(55.751244, 37.618423);
+        map.addMarker(new MarkerOptions().position(sydney).title("Marker in Moscow"));
+        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
@@ -99,12 +104,10 @@ public class MapFragment
     }
 
     @Override
-    public void showPins(List<DepositionPointResponse> pins) {
+    public void showPins(List<DepositionPoint> pins) {
         clearPins();
-        for (DepositionPointResponse pin : pins) {
-            addPin(new MapCoordinates(
-                    pin.getLocation().getLatitude(),
-                    pin.getLocation().getLongitude()));
+        for (DepositionPoint pin : pins) {
+            addPin(new MapCoordinates(pin.getLatitude(), pin.getLongitude()));
         }
     }
 

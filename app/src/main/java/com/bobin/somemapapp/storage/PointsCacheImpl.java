@@ -50,6 +50,7 @@ public class PointsCacheImpl implements PointsCache {
         if (outerCircle == null)
             return null;
         if (timeExpired(outerCircle)) {
+            // а если он пересекается с другим актуальным?
             terminateCircleAndNestedPoints(outerCircle);
             return null;
         }
@@ -75,11 +76,7 @@ public class PointsCacheImpl implements PointsCache {
                 .in("externalId", ids)
                 .findAll();
 
-        List<DepositionPoint> subSet = new ArrayList<>();
-        for (DepositionPoint point : allPoints)
-            if (pointInsideCircle(targetCircle, point))
-                subSet.add(point);
-        return subSet;
+        return GoogleMapUtils.pointsFromCircle(targetCircle, allPoints);
     }
 
     private List<PointsToCircle> createPointsToCircleLinks(PointsCircle pointsCircle, List<DepositionPoint> points) {
@@ -129,7 +126,7 @@ public class PointsCacheImpl implements PointsCache {
         }
         return null;
     }
- 
+
     @Nonnull
     private List<PointsCircle> findNestedCirclesOrNull(PointsCircle targetCircle) {
         List<PointsCircle> result = new ArrayList<>();
@@ -144,9 +141,5 @@ public class PointsCacheImpl implements PointsCache {
     private boolean timeExpired(PointsCircle circle) {
         long now = System.currentTimeMillis();
         return now - circle.getTimestamp() > 1000 * 60 * 10;
-    }
-
-    private boolean pointInsideCircle(PointsCircle circle, DepositionPoint point) {
-        return GoogleMapUtils.distanceBetween(circle.getCenterMapCoordinates(), point.getMapCoordinates()) < circle.getRadius();
     }
 }
