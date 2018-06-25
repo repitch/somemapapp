@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.CameraBounds;
+import com.bobin.somemapapp.model.DepositionPointClusterItem;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.presenter.MapPresenter;
@@ -28,8 +30,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
 import java.util.List;
 
@@ -38,12 +42,13 @@ public class MapFragment
         implements OnMapReadyCallback,
         MapView,
         GoogleMap.OnCameraIdleListener,
-        GoogleMap.OnCameraMoveCanceledListener {
+        GoogleMap.OnCameraMoveCanceledListener, GoogleMap.OnMarkerClickListener {
 
     @InjectPresenter
     MapPresenter presenter;
 
     private GoogleMap map;
+    private ClusterManager<DepositionPointClusterItem> clusterManager;
 
     @Nullable
     @Override
@@ -70,17 +75,18 @@ public class MapFragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-
+        clusterManager = new ClusterManager<>(getContext(), googleMap);
+        clusterManager.setAlgorithm(new GridBasedAlgorithm<>());
+        clusterManager.setAnimation(false);
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setCompassEnabled(true);
         presenter.mapIsReady(getActivity());
 
         map.setOnCameraIdleListener(this);
         map.setOnCameraMoveCanceledListener(this);
+        map.setOnMarkerClickListener(this);
 
-        LatLng sydney = new LatLng(55.751244, 37.618423);
-        map.addMarker(new MarkerOptions().position(sydney).title("Marker in Moscow"));
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.751244, 37.618423), 15));
     }
 
     @Override
@@ -106,6 +112,7 @@ public class MapFragment
     @Override
     public void showPins(List<DepositionPoint> pins) {
         clearPins();
+        Log.d("MapFragment", "adding pins: " + pins.size());
         for (DepositionPoint pin : pins) {
             addPin(new MapCoordinates(pin.getLatitude(), pin.getLongitude()));
         }
@@ -113,13 +120,12 @@ public class MapFragment
 
     @Override
     public void addPin(MapCoordinates coordinates) {
-        LatLng latLng = GoogleMapUtils.toLatLng(coordinates);
-        map.addMarker(new MarkerOptions().position(latLng));
+        clusterManager.addItem(new DepositionPointClusterItem(coordinates));
     }
 
     @Override
     public void clearPins() {
-        map.clear();
+        clusterManager.clearItems();
     }
 
     @Override
@@ -132,11 +138,14 @@ public class MapFragment
 
     @Override
     public void onCameraIdle() {
+        Log.d("MapFragment", "onCameraIdle");
+        clusterManager.onCameraIdle();
         cameraStops();
     }
 
     @Override
     public void onCameraMoveCanceled() {
+        Log.d("MapFragment", "onCameraMoveCanceled");
         cameraStops();
     }
 
@@ -151,5 +160,10 @@ public class MapFragment
                 GoogleMapUtils.toCoordinates(visibleRegion.latLngBounds.getCenter()));
 
         presenter.mapCameraStops(cameraBounds);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return clusterManager.onMarkerClick(marker);
     }
 }

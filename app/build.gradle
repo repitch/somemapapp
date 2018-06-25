@@ -52,4 +52,5 @@ dependencies {
     implementation 'com.google.dagger:dagger:2.16'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.16'
     //implementation 'com.j256.ormlite:ormlite-android:5.1'
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
 }

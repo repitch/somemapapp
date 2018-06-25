@@ -1,5 +1,7 @@
 package com.bobin.somemapapp.storage;
 
+import android.util.Log;
+
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
 import com.bobin.somemapapp.model.tables.PointsToCircle;
@@ -45,11 +47,16 @@ public class PointsCacheImpl implements PointsCache {
     @Nullable
     @Override
     public List<DepositionPoint> getPointsOrNull(double latitude, double longitude, int radius) {
+        Log.d("PointsCacheImpl", "getPointsOrNull lat: " + latitude + " lon: " + longitude + " rad: " + radius);
         PointsCircle targetCircle = new PointsCircle(latitude, longitude, radius);
         PointsCircle outerCircle = findOuterCircleOrNull(targetCircle);
         if (outerCircle == null)
+        {
+            Log.d("PointsCacheImpl", "no cache");
             return null;
+        }
         if (timeExpired(outerCircle)) {
+            Log.d("PointsCacheImpl", "circle expired");
             // а если он пересекается с другим актуальным?
             terminateCircleAndNestedPoints(outerCircle);
             return null;

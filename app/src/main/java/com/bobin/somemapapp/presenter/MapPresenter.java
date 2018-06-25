@@ -2,6 +2,7 @@ package com.bobin.somemapapp.presenter;
 
 import android.Manifest;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
@@ -60,24 +61,36 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 .filter(this::needLoadPoints)
                 .flatMap(x -> getDepositionPoints(x).observeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(Observable.empty())
                 .subscribe(x -> {
                     getViewState().showPins(x.points);
                     currentScreenData = x;
-                }, t -> {
                 });
         compositeDisposable.add(subscribe);
     }
 
+    // удалять штуки, которые вне экрана - из-за них лагает
     private boolean needLoadPoints(CameraBounds bounds) {
-        if (currentScreenData == null)
+        if (currentScreenData == null) {
+            Log.d("MapPresenter", "currentScreenData == null");
             return true;
+        }
 
         PointsCircle circle = GoogleMapUtils.toCircle(bounds);
 
         List<DepositionPoint> pointsFromCircle =
                 GoogleMapUtils.pointsFromCircle(circle, currentScreenData.points);
 
-        return !currentScreenData.circle.contains(circle) || pointsFromCircle.size() == 0;
+        if (!currentScreenData.circle.contains(circle)) {
+            Log.d("MapPresenter", "!currentScreenData.circle.contains(circle)");
+            return true;
+        }
+        if (pointsFromCircle.size() == 0) {
+            Log.d("MapPresenter", "pointsFromCircle.size() == 0");
+            return true;
+        }
+        Log.d("MapPresenter", "filtered");
+        return false;
     }
 
     private Observable<CircleWithPoints> getDepositionPoints(CameraBounds bounds) {
