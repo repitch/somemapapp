@@ -1,6 +1,7 @@
 package com.bobin.somemapapp.model.tables;
 
 import com.bobin.somemapapp.model.MapCoordinates;
+import com.bobin.somemapapp.utils.GoogleMapUtils;
 
 import java.util.UUID;
 
@@ -71,7 +72,8 @@ public class PointsCircle extends RealmObject {
         this.radius = radius;
     }
 
-    public int getDiameter() {
-        return getRadius() * 2;
+    public boolean contains(PointsCircle circle) {
+        float distance = GoogleMapUtils.distanceBetween(circle, this);
+        return circle.getRadius() + distance < getRadius();
     }
 }

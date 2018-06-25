@@ -12,9 +12,11 @@ public class DepositionPointsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deposition_points);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.container, new MapFragment())
-                .commit();
+        if (savedInstanceState != null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.container, new MapFragment())
+                    .commit();
+        }
     }
 }

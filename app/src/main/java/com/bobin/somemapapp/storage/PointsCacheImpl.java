@@ -124,26 +124,21 @@ public class PointsCacheImpl implements PointsCache {
     private PointsCircle findOuterCircleOrNull(PointsCircle targetCircle) {
         List<PointsCircle> allCircles = database.getAll(PointsCircle.class);
         for (PointsCircle circle : allCircles) {
-            if (circleAIsInsideCircleB(targetCircle, circle))
+            if (circle.contains(targetCircle))
                 return circle;
         }
         return null;
     }
-
+ 
     @Nonnull
     private List<PointsCircle> findNestedCirclesOrNull(PointsCircle targetCircle) {
         List<PointsCircle> result = new ArrayList<>();
         List<PointsCircle> allCircles = database.getAll(PointsCircle.class);
         for (PointsCircle circle : allCircles) {
-            if (circleAIsInsideCircleB(circle, targetCircle))
+            if (targetCircle.contains(circle))
                 result.add(circle);
         }
         return result;
-    }
-
-    private boolean circleAIsInsideCircleB(PointsCircle circleA, PointsCircle circleB) {
-        float distance = GoogleMapUtils.distanceBetween(circleA, circleB);
-        return circleA.getRadius() + distance < circleB.getRadius();
     }
 
     private boolean timeExpired(PointsCircle circle) {

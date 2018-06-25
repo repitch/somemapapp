@@ -3,12 +3,14 @@ package com.bobin.somemapapp.presenter;
 import android.Manifest;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.util.Pair;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.bobin.somemapapp.model.CameraBounds;
 import com.bobin.somemapapp.model.response.DepositionPointResponse;
 import com.bobin.somemapapp.model.response.TinkoffApiResponse;
+import com.bobin.somemapapp.model.tables.PointsCircle;
 import com.bobin.somemapapp.network.api.TinkoffApi;
 import com.bobin.somemapapp.network.api.TinkoffApiFactory;
 import com.bobin.somemapapp.ui.view.MapView;
@@ -31,6 +33,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
     private CompositeDisposable compositeDisposable;
     private TinkoffApi tinkoffApi;
     private PublishSubject<CameraBounds> cameraBoundsPublishSubject;
+    private PointsCircle currentCircle;
 
     public MapPresenter() {
         compositeDisposable = new CompositeDisposable();
@@ -53,25 +56,28 @@ public class MapPresenter extends MvpPresenter<MapView> {
         super.onFirstViewAttach();
         Disposable subscribe = cameraBoundsPublishSubject
                 .debounce(1L, TimeUnit.SECONDS)
+                .filter(x -> currentCircle == null || !currentCircle.contains(GoogleMapUtils.toCircle(x)))
                 .flatMap(x -> getDepositionPoints(x).subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(x -> getViewState().showPins(x));
+                .subscribe(x -> {
+                    currentCircle = x.circle;
+                    getViewState().showPins(x.points);
+                });
         compositeDisposable.add(subscribe);
     }
 
-    private Observable<List<DepositionPointResponse>> getDepositionPoints(CameraBounds bounds) {
-        float r1 = GoogleMapUtils.distanceBetween(bounds.getLeftTop(), bounds.getCenter());
-        float r2 = GoogleMapUtils.distanceBetween(bounds.getRightBottom(), bounds.getCenter());
-        float radius = Math.max(r1, r2);
+    private Observable<CircleWithPoints> getDepositionPoints(CameraBounds bounds) {
+        final PointsCircle pointsCircle = GoogleMapUtils.toCircle(bounds);
 
         return tinkoffApi.getDepositionPoints(
-                bounds.getCenter().getLatitude(),
-                bounds.getCenter().getLongitude(),
-                (int) radius)
+                pointsCircle.getCenterLatitude(),
+                pointsCircle.getCenterLongitude(),
+                pointsCircle.getRadius())
                 .toObservable()
                 .flatMapIterable(TinkoffApiResponse::getPayload)
                 .toList()
-                .toObservable();
+                .toObservable()
+                .map(x -> new CircleWithPoints(pointsCircle, x));
     }
 
     @Override
@@ -83,5 +89,15 @@ public class MapPresenter extends MvpPresenter<MapView> {
     public void mapCameraStops(CameraBounds bounds) {
         Log.d("MapPresenter", "mapCameraStops");
         cameraBoundsPublishSubject.onNext(bounds);
+    }
+
+    private static class CircleWithPoints {
+        PointsCircle circle;
+        List<DepositionPointResponse> points;
+
+        CircleWithPoints(PointsCircle circle, List<DepositionPointResponse> points) {
+            this.circle = circle;
+            this.points = points;
+        }
     }
 }

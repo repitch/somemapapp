@@ -2,6 +2,7 @@ package com.bobin.somemapapp.utils;
 
 import android.location.Location;
 
+import com.bobin.somemapapp.model.CameraBounds;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.response.LocationResponse;
 import com.bobin.somemapapp.model.tables.PointsCircle;
@@ -34,6 +35,18 @@ public final class GoogleMapUtils {
                 pointA.getLongitude(),
                 pointB.getLatitude(),
                 pointB.getLongitude());
+    }
+
+
+    public static PointsCircle toCircle(CameraBounds bounds) {
+        float r1 = GoogleMapUtils.distanceBetween(bounds.getLeftTop(), bounds.getCenter());
+        float r2 = GoogleMapUtils.distanceBetween(bounds.getRightBottom(), bounds.getCenter());
+        int radius = (int) Math.max(r1, r2);
+
+        return new PointsCircle(
+                bounds.getCenter().getLatitude(),
+                bounds.getCenter().getLongitude(),
+                radius);
     }
 
     private static float distanceBetween(double startLatitude, double startLongitude,
