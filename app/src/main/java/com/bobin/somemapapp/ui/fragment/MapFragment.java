@@ -21,6 +21,7 @@ import com.bobin.somemapapp.model.DepositionPointClusterItem;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.presenter.MapPresenter;
+import com.bobin.somemapapp.ui.activity.DepositionPointsChangedListener;
 import com.bobin.somemapapp.ui.view.MapView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -49,6 +50,16 @@ public class MapFragment
 
     private GoogleMap map;
     private ClusterManager<DepositionPointClusterItem> clusterManager;
+    private DepositionPointsChangedListener depositionPointsChangedListener;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        FragmentActivity activity = getActivity();
+        if (activity instanceof DepositionPointsChangedListener) {
+            depositionPointsChangedListener = (DepositionPointsChangedListener) activity;
+        }
+    }
 
     @Nullable
     @Override
@@ -116,6 +127,7 @@ public class MapFragment
         for (DepositionPoint pin : pins) {
             addPin(new MapCoordinates(pin.getLatitude(), pin.getLongitude()));
         }
+        depositionPointsChangedListener.onChangeDepositionPoints(pins);
     }
 
     @Override
@@ -160,6 +172,12 @@ public class MapFragment
                 GoogleMapUtils.toCoordinates(visibleRegion.latLngBounds.getCenter()));
 
         presenter.mapCameraStops(cameraBounds);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        depositionPointsChangedListener = null;
     }
 
     @Override

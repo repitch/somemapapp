@@ -7,7 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.bobin.somemapapp.R;
+import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsPagerAdapter;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -15,7 +18,9 @@ import butterknife.Unbinder;
 
 public class DepositionPointsActivity
         extends AppCompatActivity
-        implements TabLayout.OnTabSelectedListener, ViewPager.OnPageChangeListener {
+        implements TabLayout.OnTabSelectedListener,
+        ViewPager.OnPageChangeListener,
+        DepositionPointsChangedListener {
     @BindView(R.id.view_pager)
     ViewPager viewPager;
     @BindView(R.id.toolbar)
@@ -24,6 +29,7 @@ public class DepositionPointsActivity
     TabLayout tabLayout;
 
     private Unbinder unbinder;
+    private DepositionPointsPagerAdapter fragmentsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +37,8 @@ public class DepositionPointsActivity
         setContentView(R.layout.activity_deposition_points);
         unbinder = ButterKnife.bind(this);
 
-        viewPager.setAdapter(new DepositionPointsPagerAdapter(getSupportFragmentManager()));
+        fragmentsAdapter = new DepositionPointsPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(fragmentsAdapter);
 
         initToolbar();
     }
@@ -76,5 +83,10 @@ public class DepositionPointsActivity
 
     @Override
     public void onPageScrollStateChanged(int state) {
+    }
+
+    @Override
+    public void onChangeDepositionPoints(List<DepositionPoint> points) {
+        fragmentsAdapter.updatePointsList(points);
     }
 }
