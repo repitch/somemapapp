@@ -83,7 +83,7 @@ public class PointsCacheImpl implements PointsCache {
                 .in("externalId", ids)
                 .findAll();
 
-        return GoogleMapUtils.pointsFromCircle(targetCircle, allPoints);
+        return GoogleMapUtils.pointsFromCircle(targetCircle, realm.copyFromRealm(allPoints));
     }
 
     private List<PointsToCircle> createPointsToCircleLinks(PointsCircle pointsCircle, List<DepositionPoint> points) {

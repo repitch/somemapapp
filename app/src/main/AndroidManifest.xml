@@ -19,6 +19,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:theme="@style/Theme.Design.Light.NoActionBar"
             android:name=".ui.activity.DepositionPointsActivity"
             android:label="@string/title_activity_map">
             <intent-filter>
