@@ -65,4 +65,9 @@ public class DepositionPoint extends RealmObject {
     public void setFullAddress(String fullAddress) {
         this.fullAddress = fullAddress;
     }
+
+    @Override
+    public String toString() {
+        return getPartnerName() + " " + getFullAddress();
+    }
 }

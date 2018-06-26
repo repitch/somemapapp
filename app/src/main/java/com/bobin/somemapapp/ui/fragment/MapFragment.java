@@ -100,17 +100,6 @@ public class MapFragment
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.751244, 37.618423), 15));
     }
 
-    @Override
-    public void showDialog(String title, String text) {
-        Context context = getContext();
-        if (context == null)
-            return;
-        new AlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(text)
-                .show();
-    }
-
     @SuppressLint("MissingPermission")
     @Override
     public void setMyLocationButtonEnabled(Boolean value) {
@@ -122,32 +111,20 @@ public class MapFragment
 
     @Override
     public void showPins(List<DepositionPoint> pins) {
-        clearPins();
+        if (clusterManager == null)
+            return;
+        clusterManager.clearItems();
+
         Log.d("MapFragment", "adding pins: " + pins.size());
+
         for (DepositionPoint pin : pins) {
-            addPin(new MapCoordinates(pin.getLatitude(), pin.getLongitude()));
+            clusterManager.addItem(new DepositionPointClusterItem(
+                    pin.getLatitude(),
+                    pin.getLongitude(),
+                    pin.getPartnerName()));
         }
+
         depositionPointsChangedListener.onChangeDepositionPoints(pins);
-    }
-
-    @Override
-    public void addPin(MapCoordinates coordinates) {
-        if (clusterManager != null)
-            clusterManager.addItem(new DepositionPointClusterItem(coordinates));
-    }
-
-    @Override
-    public void clearPins() {
-        if (clusterManager != null)
-            clusterManager.clearItems();
-    }
-
-    @Override
-    public void addRadius(MapCoordinates center, double radius) {
-        Circle currentCircle = map.addCircle(
-                new CircleOptions()
-                        .center(GoogleMapUtils.toLatLng(center))
-                        .radius(radius));
     }
 
     @Override
@@ -184,6 +161,7 @@ public class MapFragment
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        presenter.clickOnMarker(marker.getPosition().latitude, marker.getPosition().longitude);
         return clusterManager.onMarkerClick(marker);
     }
 }

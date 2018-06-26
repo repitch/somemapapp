@@ -29,7 +29,6 @@ import io.reactivex.subjects.PublishSubject;
 
 @InjectViewState
 public class MapPresenter extends MvpPresenter<MapView> {
-    private final PointsCacheImpl pointsCache;
     private CompositeDisposable compositeDisposable;
     private PublishSubject<CameraBounds> cameraBoundsPublishSubject;
     private DepositionPointsService depositionPointsService;
@@ -38,9 +37,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
     public MapPresenter() {
         compositeDisposable = new CompositeDisposable();
         cameraBoundsPublishSubject = PublishSubject.create();
-        pointsCache = new PointsCacheImpl();
-        depositionPointsService = new DepositionPointsServiceImpl(new TinkoffApiFactory().createApi(),
-                pointsCache);
+        depositionPointsService = new DepositionPointsServiceImpl(new TinkoffApiFactory().createApi(), new PointsCacheImpl());
     }
 
     public void mapIsReady(FragmentActivity activity) {
@@ -107,8 +104,23 @@ public class MapPresenter extends MvpPresenter<MapView> {
         compositeDisposable.dispose();
     }
 
+    public void clickOnMarker(double latitude, double longitude) {
+        DepositionPoint point = findPoint(latitude, longitude);
+        Log.d("MapPresenter", "click on " + point);
+    }
+
     public void mapCameraStops(CameraBounds bounds) {
         cameraBoundsPublishSubject.onNext(bounds);
+    }
+
+    private DepositionPoint findPoint(double latitude, double longitude) {
+        if (currentScreenData == null)
+            return null;
+        for (DepositionPoint point : currentScreenData.points) {
+            if (point.getLatitude() == latitude && point.getLongitude() == longitude)
+                return point;
+        }
+        return null;
     }
 
     private static class CircleWithPoints {

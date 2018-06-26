@@ -4,10 +4,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
 public class DepositionPointClusterItem implements ClusterItem {
-    private LatLng position;
+    private final String title;
+    private final LatLng position;
 
-    public DepositionPointClusterItem(MapCoordinates coordinates) {
-        position = new LatLng(coordinates.getLatitude(), coordinates.getLongitude());
+    public DepositionPointClusterItem(double latitude, double longitude, String title) {
+        position = new LatLng(latitude, longitude);
+        this.title = title;
     }
 
     @Override
@@ -17,7 +19,7 @@ public class DepositionPointClusterItem implements ClusterItem {
 
     @Override
     public String getTitle() {
-        return null;
+        return title;
     }
 
     @Override
