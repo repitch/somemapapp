@@ -9,5 +9,7 @@ public interface MapView extends MvpView {
     void setMyLocationButtonEnabled(Boolean value);
 
     void showPins(List<DepositionPoint> pins);
+
+    void showBottomSheet(DepositionPoint point, String iconUrl);
 }
 

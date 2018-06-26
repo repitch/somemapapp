@@ -41,13 +41,14 @@ public class DepositionPointsActivity
         viewPager.setAdapter(fragmentsAdapter);
 
         initToolbar();
+
     }
 
     private void initToolbar() {
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Map");
-        tabLayout.addTab(tabLayout.newTab().setText("Карта"), 0);
-        tabLayout.addTab(tabLayout.newTab().setText("Точки"), 1);
+        getSupportActionBar().setTitle(R.string.app_name);
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.map), 0);
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.points), 1);
         tabLayout.addOnTabSelectedListener(this);
         viewPager.addOnPageChangeListener(this);
     }
@@ -88,5 +89,6 @@ public class DepositionPointsActivity
     @Override
     public void onChangeDepositionPoints(List<DepositionPoint> points) {
         fragmentsAdapter.updatePointsList(points);
+        tabLayout.getTabAt(1).setText(getString(R.string.points) + " (" + points.size() + ")");
     }
 }

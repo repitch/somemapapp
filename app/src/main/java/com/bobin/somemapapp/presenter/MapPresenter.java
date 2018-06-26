@@ -6,12 +6,18 @@ import android.util.Log;
 
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
+import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.infrastructure.DepositionPointsService;
 import com.bobin.somemapapp.infrastructure.DepositionPointsServiceImpl;
+import com.bobin.somemapapp.infrastructure.PartnersService;
+import com.bobin.somemapapp.infrastructure.PartnersServiceImpl;
 import com.bobin.somemapapp.model.CameraBounds;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
+import com.bobin.somemapapp.network.api.TinkoffApi;
 import com.bobin.somemapapp.network.api.TinkoffApiFactory;
+import com.bobin.somemapapp.storage.KeyValueStorageImpl;
+import com.bobin.somemapapp.storage.PartnersCacheImpl;
 import com.bobin.somemapapp.storage.PointsCacheImpl;
 import com.bobin.somemapapp.ui.view.MapView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
@@ -21,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -33,11 +40,14 @@ public class MapPresenter extends MvpPresenter<MapView> {
     private PublishSubject<CameraBounds> cameraBoundsPublishSubject;
     private DepositionPointsService depositionPointsService;
     private CircleWithPoints currentScreenData;
+    private PartnersService partnersService;
 
     public MapPresenter() {
+        TinkoffApi api = new TinkoffApiFactory().createApi();
+        partnersService = new PartnersServiceImpl(api, new PartnersCacheImpl(new KeyValueStorageImpl(MapApp.context)));
         compositeDisposable = new CompositeDisposable();
         cameraBoundsPublishSubject = PublishSubject.create();
-        depositionPointsService = new DepositionPointsServiceImpl(new TinkoffApiFactory().createApi(), new PointsCacheImpl());
+        depositionPointsService = new DepositionPointsServiceImpl(api, new PointsCacheImpl());
     }
 
     public void mapIsReady(FragmentActivity activity) {
@@ -106,7 +116,17 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     public void clickOnMarker(double latitude, double longitude) {
         DepositionPoint point = findPoint(latitude, longitude);
-        Log.d("MapPresenter", "click on " + point);
+        if (point != null) {
+            Disposable subscribe = partnersService.getPartnerById(point.getPartnerName())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(partner -> {
+                        String imgUrl = "https://static.tinkoff.ru/icons/deposition-partners-v3/mdpi/" + partner.getPicture();
+                        getViewState().showBottomSheet(point, imgUrl);
+                    });
+            compositeDisposable.add(subscribe);
+        }
+
     }
 
     public void mapCameraStops(CameraBounds bounds) {

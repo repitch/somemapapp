@@ -33,7 +33,7 @@ public class PartnersCacheImpl implements PartnersCache {
         if (partners == null || partners.size() == 0)
             return null;
         //noinspection ConstantConditions
-        return realm.copyToRealm(partners.get(0));
+        return realm.copyFromRealm(partners.get(0));
     }
 
     @Override

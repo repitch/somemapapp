@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Some map app</string>
     <string name="title_activity_map">Map</string>
+    <string name="address_label">Адрес:</string>
+    <string name="work_hours_label">Часы работы:</string>
+    <string name="map">Карта</string>
+    <string name="points">Точки</string>
 </resources>
