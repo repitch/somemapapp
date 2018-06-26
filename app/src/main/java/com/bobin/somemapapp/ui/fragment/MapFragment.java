@@ -132,12 +132,14 @@ public class MapFragment
 
     @Override
     public void addPin(MapCoordinates coordinates) {
-        clusterManager.addItem(new DepositionPointClusterItem(coordinates));
+        if (clusterManager != null)
+            clusterManager.addItem(new DepositionPointClusterItem(coordinates));
     }
 
     @Override
     public void clearPins() {
-        clusterManager.clearItems();
+        if (clusterManager != null)
+            clusterManager.clearItems();
     }
 
     @Override

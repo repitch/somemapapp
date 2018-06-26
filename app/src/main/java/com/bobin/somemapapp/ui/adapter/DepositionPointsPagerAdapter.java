@@ -11,11 +11,12 @@ import com.bobin.somemapapp.ui.fragment.MapFragment;
 import java.util.List;
 
 public class DepositionPointsPagerAdapter extends FragmentPagerAdapter {
+    private final FragmentManager fm;
+
     public DepositionPointsPagerAdapter(FragmentManager fm) {
         super(fm);
+        this.fm = fm;
     }
-
-    private DepositionPointsListFragment depositionPointsListFragment;
 
     @Override
     public Fragment getItem(int position) {
@@ -23,8 +24,7 @@ public class DepositionPointsPagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return new MapFragment();
             case 1:
-                depositionPointsListFragment = new DepositionPointsListFragment();
-                return depositionPointsListFragment;
+                return new DepositionPointsListFragment();
         }
         throw new IndexOutOfBoundsException();
     }
@@ -35,7 +35,17 @@ public class DepositionPointsPagerAdapter extends FragmentPagerAdapter {
     }
 
     public void updatePointsList(List<DepositionPoint> points) {
-        if (depositionPointsListFragment != null)
-            depositionPointsListFragment.updateList(points);
+        List<Fragment> fragments = fm.getFragments();
+
+        if (fragments == null)
+            return;
+        for (Fragment fragment : fragments) {
+            if (fragment == null)
+                continue;
+            if (fragment instanceof DepositionPointsListFragment) {
+                ((DepositionPointsListFragment) fragment).updateList(points);
+                return;
+            }
+        }
     }
 }
