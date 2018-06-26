@@ -122,7 +122,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(partner -> {
                         String imgUrl = "https://static.tinkoff.ru/icons/deposition-partners-v3/mdpi/" + partner.getPicture();
-                        getViewState().showBottomSheet(point, imgUrl);
+                        getViewState().showBottomSheet(point, partner.getName(), imgUrl);
                     });
             compositeDisposable.add(subscribe);
         }

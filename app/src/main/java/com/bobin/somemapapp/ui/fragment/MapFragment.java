@@ -129,8 +129,8 @@ public class MapFragment
     }
 
     @Override
-    public void showBottomSheet(DepositionPoint point, String iconUrl) {
-        new PointDetailBottomSheet(getContext()).show(point, iconUrl);
+    public void showBottomSheet(DepositionPoint point, String name, String iconUrl) {
+        new PointDetailBottomSheet(getContext()).show(point, name, iconUrl);
     }
 
     @Override

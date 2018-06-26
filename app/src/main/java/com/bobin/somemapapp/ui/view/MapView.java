@@ -10,6 +10,6 @@ public interface MapView extends MvpView {
 
     void showPins(List<DepositionPoint> pins);
 
-    void showBottomSheet(DepositionPoint point, String iconUrl);
+    void showBottomSheet(DepositionPoint point, String name, String iconUrl);
 }
 

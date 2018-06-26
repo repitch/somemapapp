@@ -51,9 +51,9 @@ public class PointDetailBottomSheet extends BottomSheetDialog {
         ((View) view.getParent()).setBackgroundColor(getContext().getResources().getColor(android.R.color.transparent));
     }
 
-    public void show(DepositionPoint point, String iconUrl) {
+    public void show(DepositionPoint point, String name, String iconUrl) {
         Glide.with(icon).load(iconUrl).apply(new RequestOptions().circleCrop()).into(icon);
-        name.setText(point.getPartnerName());
+        this.name.setText(name);
         address.setText(point.getFullAddress());
         String hours = point.getWorkHours();
         if (hours == null || hours.length() == 0) {
