@@ -18,7 +18,8 @@
             android:layout_height="70dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp"
-            android:layout_marginTop="22dp" />
+            android:layout_marginTop="22dp"
+            android:transitionName="partner_icon" />
 
         <TextView
             android:id="@+id/address"

@@ -1,5 +1,6 @@
 package com.bobin.somemapapp.ui.activity;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -79,7 +80,8 @@ public class DepositionPointDetailActivity
 
     public static void start(@Nonnull Context context,
                              @Nonnull DepositionPoint point,
-                             @Nullable MapCoordinates userPosition) {
+                             @Nullable MapCoordinates userPosition,
+                             @Nullable ActivityOptions activityOptions) {
         Intent intent = new Intent(context, DepositionPointDetailActivity.class)
                 .putExtra(PARTNER_ID_KEY, point.getPartnerName())
                 .putExtra(POINT_LATITUDE_KEY, point.getLatitude())
@@ -91,7 +93,10 @@ public class DepositionPointDetailActivity
                     .putExtra(USER_LONGITUDE_KEY, userPosition.getLongitude());
         }
 
-        context.startActivity(intent);
+        if (activityOptions == null)
+            context.startActivity(intent);
+        else
+            context.startActivity(intent, activityOptions.toBundle());
     }
 
     @Override

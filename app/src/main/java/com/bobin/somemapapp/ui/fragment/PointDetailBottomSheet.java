@@ -48,7 +48,7 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
 
     private void onClick(View view) {
         if (clickListener != null)
-            clickListener.onSheetClick(currentPoint);
+            clickListener.onSheetClick(currentPoint, icon);
     }
 
     public PointDetailBottomSheet setClickListener(ClickListener clickListener) {
@@ -108,6 +108,6 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
     }
 
     public interface ClickListener {
-        void onSheetClick(DepositionPoint point);
+        void onSheetClick(DepositionPoint point, View iconView);
     }
 }

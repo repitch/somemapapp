@@ -1,6 +1,7 @@
 package com.bobin.somemapapp.ui.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,8 +143,18 @@ public class MapFragment
                 .show(fragmentManager, "PointDetailBottomSheet_" + name);
     }
 
-    private void onBottomSheetClick(DepositionPoint point) {
-        DepositionPointDetailActivity.start(getContext(), point, currentUserLocation);
+    private void onBottomSheetClick(DepositionPoint point, View iconView) {
+        ActivityOptions activityOptions = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            activityOptions = ActivityOptions.makeSceneTransitionAnimation(
+                    getActivity(), iconView, "partner_icon");
+        }
+
+        DepositionPointDetailActivity.start(
+                getContext(),
+                point,
+                currentUserLocation,
+                activityOptions);
     }
 
     @Override
