@@ -1,5 +1,6 @@
 package com.bobin.somemapapp.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -42,6 +43,7 @@ public class DepositionPointsActivity
 
         initToolbar();
 
+        startActivity(new Intent(this, DepositionPointDetailActivity.class));
     }
 
     private void initToolbar() {

@@ -1,5 +1,7 @@
 package com.bobin.somemapapp.model.tables;
 
+import com.bobin.somemapapp.model.MapCoordinates;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
