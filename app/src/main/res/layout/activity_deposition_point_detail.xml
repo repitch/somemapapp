@@ -181,6 +181,13 @@
             android:layout_height="1px"
             android:background="@color/light_grey" />
 
+        <TextView
+            android:id="@+id/go_to_web_site"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="48dp"
+            android:text="@string/go_to_web_site" />
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
 

@@ -2,6 +2,7 @@ package com.bobin.somemapapp.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
@@ -121,6 +122,11 @@ public class DepositionPointDetailActivity
         presenter.onStart(partnerId, pointLocation, userPosition);
     }
 
+    @OnClick(R.id.go_to_web_site)
+    public void onGoToWebSiteClick() {
+        presenter.goToWebSite();
+    }
+
     @OnClick(R.id.description_button)
     public void toggleDescription(View header) {
         if (header instanceof ExpandHeader)
@@ -182,6 +188,11 @@ public class DepositionPointDetailActivity
     @Override
     public void finishActivity() {
         finish();
+    }
+
+    @Override
+    public void openBrowser(Uri uri) {
+        startActivity(new Intent(Intent.ACTION_VIEW, uri));
     }
 }
 

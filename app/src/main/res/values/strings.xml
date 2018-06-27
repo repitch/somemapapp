@@ -11,4 +11,5 @@
     <string name="restrictions">Ограничения</string>
     <string name="meters">метров</string>
     <string name="km">км</string>
+    <string name="go_to_web_site">Перейти на веб-сайт</string>
 </resources>
