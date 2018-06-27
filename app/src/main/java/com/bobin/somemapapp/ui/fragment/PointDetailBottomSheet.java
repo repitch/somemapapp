@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
+import com.bobin.somemapapp.utils.ViewUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
@@ -93,7 +94,7 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void initData() {
-        Glide.with(icon).load(pointIcon).apply(new RequestOptions().circleCrop()).into(icon);
+        ViewUtils.glideRoundImage(icon, pointIcon);
         this.name.setText(pointName);
         address.setText(currentPoint.getFullAddress());
         String hours = currentPoint.getWorkHours();

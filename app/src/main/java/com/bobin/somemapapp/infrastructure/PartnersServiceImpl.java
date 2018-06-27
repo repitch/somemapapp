@@ -6,6 +6,8 @@ import com.bobin.somemapapp.network.api.TinkoffApi;
 import com.bobin.somemapapp.storage.PartnersCache;
 import com.bobin.somemapapp.utils.StorageUtils;
 
+import java.util.List;
+
 import io.reactivex.Single;
 
 public class PartnersServiceImpl implements PartnersService {
@@ -24,6 +26,18 @@ public class PartnersServiceImpl implements PartnersService {
             return Single.just(partner);
 
         return cachePartners().map(x -> partnersCache.getPartnerByIdOrNull(id));
+    }
+
+    @Override
+    public Single<List<DepositionPartner>> getPartnersByIds(List<String> ids) {
+        String[] idsArray = new String[ids.size()];
+        for (int i = 0; i < ids.size(); ++i)
+            idsArray[i] = ids.get(i);
+
+        if (partnersCache.isExpired())
+            return cachePartners().map(x -> partnersCache.getPartnersByIdsOrNull(idsArray));
+
+        return Single.just(partnersCache.getPartnersByIdsOrNull(idsArray));
     }
 
     private Single<Boolean> cachePartners() {

@@ -7,5 +7,9 @@ import java.util.List;
 public interface PartnersCache {
     DepositionPartner getPartnerByIdOrNull(String id);
 
+    List<DepositionPartner> getPartnersByIdsOrNull(String[] ids);
+
     void savePartners(List<DepositionPartner> partners);
+
+    boolean isExpired();
 }

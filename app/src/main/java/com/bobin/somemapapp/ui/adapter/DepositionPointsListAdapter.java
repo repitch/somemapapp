@@ -9,10 +9,12 @@ import android.view.ViewGroup;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.holder.DepositionPointViewHolder;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class DepositionPointsListAdapter extends RecyclerView.Adapter<DepositionPointViewHolder> {
     private List<DepositionPoint> points;
+    private HashMap<String, String> icons;
 
     @NonNull
     @Override
@@ -30,7 +32,7 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
     public void onBindViewHolder(@NonNull DepositionPointViewHolder holder,
                                  int position) {
         DepositionPoint point = getPoint(position);
-        holder.bind(point);
+        holder.bind(point, icons.get(point.getPartnerName()));
     }
 
     @Override
@@ -42,8 +44,9 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
         return points.get(position);
     }
 
-    public void setDataset(List<DepositionPoint> points) {
+    public void setDataset(List<DepositionPoint> points, HashMap<String, String> icons) {
         this.points = points;
+        this.icons = icons;
         notifyDataSetChanged();
     }
 }

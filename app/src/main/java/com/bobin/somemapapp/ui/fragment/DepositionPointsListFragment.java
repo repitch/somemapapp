@@ -17,6 +17,7 @@ import com.bobin.somemapapp.presenter.DepositionPointsListPresenter;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsListAdapter;
 import com.bobin.somemapapp.ui.view.DepositionPointsListView;
 
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
@@ -66,6 +67,11 @@ public class DepositionPointsListFragment
     }
 
     public void updateList(List<DepositionPoint> points) {
-        adapter.setDataset(points);
+        presenter.updateList(points);
+    }
+
+    @Override
+    public void updateList(List<DepositionPoint> points, HashMap<String, String> icons) {
+        adapter.setDataset(points, icons);
     }
 }

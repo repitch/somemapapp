@@ -8,7 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 // part of com.material.components project
 public final class ViewUtils {
@@ -59,6 +63,13 @@ public final class ViewUtils {
 
     public static Spanned toHtml(String html) {
         return Html.fromHtml(html);
+    }
+
+    public static void glideRoundImage(ImageView imageView, String url) {
+        Glide.with(imageView)
+                .load(url)
+                .apply(new RequestOptions().circleCrop())
+                .into(imageView);
     }
 
     private static Animation expandAction(final View v) {

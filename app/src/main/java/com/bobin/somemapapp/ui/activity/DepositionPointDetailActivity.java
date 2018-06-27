@@ -183,10 +183,7 @@ public class DepositionPointDetailActivity
         depositionTime.setText(ViewUtils.toHtml(partner.getDepositionDuration()));
         depositionPointType.setText(ViewUtils.toHtml(partner.getPointType()));
         oneTimeRestrictions.setText(ViewUtils.toHtml(partner.getLimitations()));
-        Glide.with(partnerIcon)
-                .load(partner.getFullPictureUrl())
-                .apply(new RequestOptions().circleCrop())
-                .into(partnerIcon);
+        ViewUtils.glideRoundImage(partnerIcon, partner.getFullPictureUrl());
     }
 
     @Override

@@ -19,11 +19,8 @@ public class PartnersCacheImpl implements PartnersCache {
 
     @Override
     public DepositionPartner getPartnerByIdOrNull(String id) {
-        long now = System.currentTimeMillis();
-        long lastUpdate = keyValueStorage.getLong(PARTNERS_UPDATE_KEY);
-        if (now - lastUpdate > 1000 * 60 * 10) {
+        if (isExpired())
             return null;
-        }
 
         Realm realm = Realm.getDefaultInstance();
         RealmResults<DepositionPartner> partners = realm.where(DepositionPartner.class)
@@ -37,6 +34,21 @@ public class PartnersCacheImpl implements PartnersCache {
     }
 
     @Override
+    public List<DepositionPartner> getPartnersByIdsOrNull(String[] ids) {
+        if (isExpired())
+            return null;
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<DepositionPartner> partners = realm.where(DepositionPartner.class)
+                .in("id", ids)
+                .findAll();
+
+        if (partners == null || partners.size() == 0)
+            return null;
+
+        return realm.copyFromRealm(partners);
+    }
+
+    @Override
     public void savePartners(List<DepositionPartner> partners) {
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(r -> {
@@ -44,5 +56,12 @@ public class PartnersCacheImpl implements PartnersCache {
             r.insert(partners);
         });
         keyValueStorage.save(PARTNERS_UPDATE_KEY, System.currentTimeMillis());
+    }
+
+    @Override
+    public boolean isExpired() {
+        long now = System.currentTimeMillis();
+        long lastUpdate = keyValueStorage.getLong(PARTNERS_UPDATE_KEY);
+        return now - lastUpdate > 1000 * 60 * 10;
     }
 }

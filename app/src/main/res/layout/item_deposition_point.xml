@@ -3,22 +3,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="16dp">
 
-    <com.bobin.somemapapp.ui.custom.MapAppTextView
-        android:id="@+id/partner_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:textColor="@color/black"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        tools:text="TINKOFF" />
+    <ImageView
+        android:id="@+id/point_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginRight="16dp" />
 
-    <com.bobin.somemapapp.ui.custom.MapAppTextView
-        android:id="@+id/full_address"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="ТЦ Кит, 1 этаж, зона банкоматов, Амундсена, 65" />
+        android:orientation="vertical">
+
+        <com.bobin.somemapapp.ui.custom.MapAppTextView
+            android:id="@+id/partner_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            tools:text="TINKOFF" />
+
+        <com.bobin.somemapapp.ui.custom.MapAppTextView
+            android:id="@+id/full_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="ТЦ Кит, 1 этаж, зона банкоматов, Амундсена, 65" />
+    </LinearLayout>
 </LinearLayout>
