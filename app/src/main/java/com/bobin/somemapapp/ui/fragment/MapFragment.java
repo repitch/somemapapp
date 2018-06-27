@@ -130,7 +130,12 @@ public class MapFragment
 
     @Override
     public void showBottomSheet(DepositionPoint point, String name, String iconUrl) {
-        new PointDetailBottomSheet(getContext()).show(point, name, iconUrl);
+        FragmentActivity activity = getActivity();
+        if (activity == null)
+            return;
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+        new PointDetailBottomSheet().show(fragmentManager, point, name, iconUrl);
     }
 
     @Override

@@ -1,10 +1,13 @@
 package com.bobin.somemapapp.ui.fragment;
 
-import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetDialog;
+import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,7 +19,7 @@ import com.bumptech.glide.request.RequestOptions;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class PointDetailBottomSheet extends BottomSheetDialog {
+public class PointDetailBottomSheet extends BottomSheetDialogFragment {
     @BindView(R.id.icon)
     ImageView icon;
     @BindView(R.id.name)
@@ -28,30 +31,22 @@ public class PointDetailBottomSheet extends BottomSheetDialog {
     @BindView(R.id.hours_label)
     TextView hoursLabel;
 
-    public PointDetailBottomSheet(@NonNull Context context) {
-        super(context);
-        init(context);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_points_small_details, container, false);
     }
 
-    public PointDetailBottomSheet(@NonNull Context context, int theme) {
-        super(context, theme);
-        init(context);
-    }
-
-    protected PointDetailBottomSheet(@NonNull Context context, boolean cancelable,
-                                     OnCancelListener cancelListener) {
-        super(context, cancelable, cancelListener);
-        init(context);
-    }
-
-    private void init(Context context) {
-        View view = LayoutInflater.from(context).inflate(R.layout.fragment_points_small_details, null);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        setContentView(view);
         ((View) view.getParent()).setBackgroundColor(getContext().getResources().getColor(android.R.color.transparent));
     }
 
-    public void show(DepositionPoint point, String name, String iconUrl) {
+    public void show(FragmentManager fragmentManager, DepositionPoint point, String name, String iconUrl) {
         Glide.with(icon).load(iconUrl).apply(new RequestOptions().circleCrop()).into(icon);
         this.name.setText(name);
         address.setText(point.getFullAddress());
@@ -64,6 +59,6 @@ public class PointDetailBottomSheet extends BottomSheetDialog {
             hoursLabel.setVisibility(View.VISIBLE);
             this.hours.setText(hours);
         }
-        show();
+        show(fragmentManager, point.getPartnerName() + "bottom_sheet");
     }
 }
