@@ -120,10 +120,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
             Disposable subscribe = partnersService.getPartnerById(point.getPartnerName())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(partner -> {
-                        String imgUrl = "https://static.tinkoff.ru/icons/deposition-partners-v3/mdpi/" + partner.getPicture();
-                        getViewState().showBottomSheet(point, partner.getName(), imgUrl);
-                    });
+                    .subscribe(partner -> getViewState().showBottomSheet(point, partner.getName(), partner.getFullPictureUrl()));
             compositeDisposable.add(subscribe);
         }
 

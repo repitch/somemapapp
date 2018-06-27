@@ -2,6 +2,7 @@ package com.bobin.somemapapp.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -45,7 +46,7 @@ public class MapFragment
         implements OnMapReadyCallback,
         MapView,
         GoogleMap.OnCameraIdleListener,
-        GoogleMap.OnCameraMoveCanceledListener, GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnCameraMoveCanceledListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMyLocationChangeListener {
 
     @InjectPresenter
     MapPresenter presenter;
@@ -94,7 +95,7 @@ public class MapFragment
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setCompassEnabled(true);
         presenter.mapIsReady(getActivity());
-
+        map.setOnMyLocationChangeListener(this);
         map.setOnCameraIdleListener(this);
         map.setOnCameraMoveCanceledListener(this);
         map.setOnMarkerClickListener(this);
@@ -141,7 +142,7 @@ public class MapFragment
     }
 
     private void onBottomSheetClick(DepositionPoint point) {
-        DepositionPointDetailActivity.start(getContext(), point, null);
+        DepositionPointDetailActivity.start(getContext(), point, currentUserLocation);
     }
 
     @Override
@@ -180,5 +181,12 @@ public class MapFragment
     public boolean onMarkerClick(Marker marker) {
         presenter.clickOnMarker(marker.getPosition().latitude, marker.getPosition().longitude);
         return clusterManager.onMarkerClick(marker);
+    }
+
+    private MapCoordinates currentUserLocation;
+
+    @Override
+    public void onMyLocationChange(Location location) {
+        currentUserLocation = GoogleMapUtils.toCoordinates(location);
     }
 }

@@ -1,7 +1,9 @@
 package com.bobin.somemapapp.utils;
 
+import android.content.Context;
 import android.location.Location;
 
+import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.CameraBounds;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.response.LocationResponse;
@@ -9,12 +11,17 @@ import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class GoogleMapUtils {
     public static LatLng toLatLng(MapCoordinates coordinates) {
         return new LatLng(coordinates.getLatitude(), coordinates.getLongitude());
+    }
+
+    public static MapCoordinates toCoordinates(Location location) {
+        return new MapCoordinates(location.getLatitude(), location.getLongitude());
     }
 
     public static MapCoordinates toCoordinates(LatLng latLng) {
@@ -64,6 +71,14 @@ public final class GoogleMapUtils {
                 bounds.getCenter().getLatitude(),
                 bounds.getCenter().getLongitude(),
                 radius);
+    }
+
+    public static String distanceToString(Context context, int meters) {
+        if (meters < 1000)
+            return meters + " " + context.getString(R.string.meters);
+
+        String format = new DecimalFormat("#.#").format(meters / 1000d);
+        return format + " " + context.getString(R.string.km);
     }
 
     private static float distanceBetween(double startLatitude, double startLongitude,

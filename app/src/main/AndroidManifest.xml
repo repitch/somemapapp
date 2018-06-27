@@ -19,15 +19,16 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:theme="@style/Theme.Design.Light.NoActionBar"
             android:name=".ui.activity.DepositionPointsActivity"
-            android:label="@string/title_activity_map">
+            android:label="@string/title_activity_map"
+            android:theme="@style/Theme.Design.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.DepositionPointDetailActivity" />
+        <activity
+            android:name=".ui.activity.DepositionPointDetailActivity" />
     </application>
 
 </manifest>

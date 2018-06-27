@@ -18,6 +18,10 @@ public class DepositionPartner extends RealmObject {
     private String pointType;
     private String description;
 
+    public String getFullPictureUrl() {
+        return "https://static.tinkoff.ru/icons/deposition-partners-v3/mdpi/" + getPicture();
+    }
+
     public String getId() {
         return id;
     }

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.arellomobile.mvp.MvpAppCompatActivity;
@@ -17,7 +19,10 @@ import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.presenter.DepositionPointDetailPresenter;
 import com.bobin.somemapapp.ui.custom.ExpandHeader;
 import com.bobin.somemapapp.ui.view.DepositionPointDetailView;
+import com.bobin.somemapapp.utils.GoogleMapUtils;
 import com.bobin.somemapapp.utils.ViewUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,6 +40,7 @@ public class DepositionPointDetailActivity
     private static final String USER_LONGITUDE_KEY = "uLongitude";
     private static final String POINT_LATITUDE_KEY = "pLatitude";
     private static final String POINT_LONGITUDE_KEY = "pLongitude";
+    private static final String POINT_ADDRESS_KEY = "pAddress";
 
     @BindView(R.id.description_content)
     FrameLayout descriptionContent;
@@ -58,6 +64,12 @@ public class DepositionPointDetailActivity
     TextView moneyRestrictions;
     @BindView(R.id.one_time_restrictions)
     TextView oneTimeRestrictions;
+    @BindView(R.id.partner_icon)
+    ImageView partnerIcon;
+    @BindView(R.id.address)
+    TextView address;
+    @BindView(R.id.distance)
+    TextView distance;
 
     @InjectPresenter
     DepositionPointDetailPresenter presenter;
@@ -70,7 +82,8 @@ public class DepositionPointDetailActivity
         Intent intent = new Intent(context, DepositionPointDetailActivity.class)
                 .putExtra(PARTNER_ID_KEY, point.getPartnerName())
                 .putExtra(POINT_LATITUDE_KEY, point.getLatitude())
-                .putExtra(POINT_LONGITUDE_KEY, point.getLongitude());
+                .putExtra(POINT_LONGITUDE_KEY, point.getLongitude())
+                .putExtra(POINT_ADDRESS_KEY, point.getFullAddress());
 
         if (userPosition != null) {
             intent.putExtra(USER_LATITUDE_KEY, userPosition.getLatitude())
@@ -91,7 +104,7 @@ public class DepositionPointDetailActivity
 
     private void notifyPresenterStart(Intent intent) {
         String partnerId = intent.getStringExtra(PARTNER_ID_KEY);
-
+        String pointAddress = intent.getStringExtra(POINT_ADDRESS_KEY);
         MapCoordinates pointLocation = new MapCoordinates(
                 intent.getDoubleExtra(POINT_LATITUDE_KEY, 0),
                 intent.getDoubleExtra(POINT_LONGITUDE_KEY, 0));
@@ -102,6 +115,8 @@ public class DepositionPointDetailActivity
                     intent.getDoubleExtra(USER_LATITUDE_KEY, 0),
                     intent.getDoubleExtra(USER_LONGITUDE_KEY, 0));
         }
+
+        address.setText(pointAddress);
 
         presenter.onStart(partnerId, pointLocation, userPosition);
     }
@@ -147,7 +162,8 @@ public class DepositionPointDetailActivity
 
     @Override
     public void showDistance(int meters) {
-
+        distance.setVisibility(meters > 0 ? View.VISIBLE : View.GONE);
+        distance.setText(GoogleMapUtils.distanceToString(this, meters));
     }
 
     @Override
@@ -157,6 +173,10 @@ public class DepositionPointDetailActivity
         depositionTime.setText(partner.getDepositionDuration());
         depositionPointType.setText(partner.getPointType());
         oneTimeRestrictions.setText(partner.getLimitations());
+        Glide.with(partnerIcon)
+                .load(partner.getFullPictureUrl())
+                .apply(new RequestOptions().circleCrop())
+                .into(partnerIcon);
     }
 
     @Override

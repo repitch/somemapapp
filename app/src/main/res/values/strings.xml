@@ -9,4 +9,6 @@
     <string name="deposition_time">Время пополнения</string>
     <string name="deposition_point_type">Тип точки пополнения</string>
     <string name="restrictions">Ограничения</string>
+    <string name="meters">метров</string>
+    <string name="km">км</string>
 </resources>
