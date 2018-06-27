@@ -24,7 +24,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/icon"
+                    android:id="@+id/point_icon"
                     android:layout_width="54dp"
                     android:layout_height="54dp" />
 

@@ -2,10 +2,12 @@ package com.bobin.somemapapp.model.tables;
 
 import com.bobin.somemapapp.model.MapCoordinates;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class DepositionPoint extends RealmObject {
+public class DepositionPoint extends RealmObject implements Serializable {
     @PrimaryKey
     private String externalId;
     private String partnerName;

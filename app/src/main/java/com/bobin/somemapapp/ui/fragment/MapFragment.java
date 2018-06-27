@@ -22,6 +22,7 @@ import com.bobin.somemapapp.model.DepositionPointClusterItem;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.presenter.MapPresenter;
+import com.bobin.somemapapp.ui.activity.DepositionPointDetailActivity;
 import com.bobin.somemapapp.ui.activity.DepositionPointsChangedListener;
 import com.bobin.somemapapp.ui.view.MapView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
@@ -133,9 +134,14 @@ public class MapFragment
         FragmentActivity activity = getActivity();
         if (activity == null)
             return;
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        PointDetailBottomSheet.newInstance(point, name, iconUrl)
+                .setClickListener(this::onBottomSheetClick)
+                .show(fragmentManager, "PointDetailBottomSheet_" + name);
+    }
 
-        new PointDetailBottomSheet().show(fragmentManager, point, name, iconUrl);
+    private void onBottomSheetClick(DepositionPoint point) {
+        DepositionPointDetailActivity.start(getContext(), point, null);
     }
 
     @Override

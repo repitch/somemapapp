@@ -115,7 +115,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
     }
 
     public void clickOnMarker(double latitude, double longitude) {
-        DepositionPoint point = findPoint(latitude, longitude);
+        final DepositionPoint point = findPoint(latitude, longitude);
         if (point != null) {
             Disposable subscribe = partnersService.getPartnerById(point.getPartnerName())
                     .subscribeOn(Schedulers.io())

@@ -1,4 +1,4 @@
-package com.bobin.somemapapp.ui.activity;
+package com.bobin.somemapapp.utils;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -6,7 +6,7 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 
 // part of com.material.components project
-public final class ViewHelpers {
+public final class ViewUtils {
     public static void expand(final View v) {
         Animation a = expandAction(v);
         v.startAnimation(a);

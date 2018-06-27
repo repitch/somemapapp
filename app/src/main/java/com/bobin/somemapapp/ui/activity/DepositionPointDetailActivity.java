@@ -13,9 +13,11 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
+import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.presenter.DepositionPointDetailPresenter;
 import com.bobin.somemapapp.ui.custom.ExpandHeader;
 import com.bobin.somemapapp.ui.view.DepositionPointDetailView;
+import com.bobin.somemapapp.utils.ViewUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,8 +31,10 @@ public class DepositionPointDetailActivity
         extends MvpAppCompatActivity
         implements DepositionPointDetailView {
     private static final String PARTNER_ID_KEY = "partnerId";
-    private static final String LATITUDE_KEY = "latitude";
-    private static final String LONGITUDE_KEY = "longitude";
+    private static final String USER_LATITUDE_KEY = "uLatitude";
+    private static final String USER_LONGITUDE_KEY = "uLongitude";
+    private static final String POINT_LATITUDE_KEY = "pLatitude";
+    private static final String POINT_LONGITUDE_KEY = "pLongitude";
 
     @BindView(R.id.description_content)
     FrameLayout descriptionContent;
@@ -55,20 +59,22 @@ public class DepositionPointDetailActivity
     @BindView(R.id.one_time_restrictions)
     TextView oneTimeRestrictions;
 
-
     @InjectPresenter
     DepositionPointDetailPresenter presenter;
 
     private Unbinder unbinder;
 
     public static void start(@Nonnull Context context,
-                             @Nonnull String partnerId,
+                             @Nonnull DepositionPoint point,
                              @Nullable MapCoordinates userPosition) {
         Intent intent = new Intent(context, DepositionPointDetailActivity.class)
-                .putExtra(PARTNER_ID_KEY, partnerId);
+                .putExtra(PARTNER_ID_KEY, point.getPartnerName())
+                .putExtra(POINT_LATITUDE_KEY, point.getLatitude())
+                .putExtra(POINT_LONGITUDE_KEY, point.getLongitude());
+
         if (userPosition != null) {
-            intent.putExtra(LATITUDE_KEY, userPosition.getLatitude())
-                    .putExtra(LONGITUDE_KEY, userPosition.getLongitude());
+            intent.putExtra(USER_LATITUDE_KEY, userPosition.getLatitude())
+                    .putExtra(USER_LONGITUDE_KEY, userPosition.getLongitude());
         }
 
         context.startActivity(intent);
@@ -86,14 +92,18 @@ public class DepositionPointDetailActivity
     private void notifyPresenterStart(Intent intent) {
         String partnerId = intent.getStringExtra(PARTNER_ID_KEY);
 
+        MapCoordinates pointLocation = new MapCoordinates(
+                intent.getDoubleExtra(POINT_LATITUDE_KEY, 0),
+                intent.getDoubleExtra(POINT_LONGITUDE_KEY, 0));
+
         MapCoordinates userPosition = null;
-        if (intent.hasExtra(LATITUDE_KEY) && intent.hasExtra(LONGITUDE_KEY)) {
+        if (intent.hasExtra(USER_LATITUDE_KEY) && intent.hasExtra(USER_LONGITUDE_KEY)) {
             userPosition = new MapCoordinates(
-                    intent.getDoubleExtra(LATITUDE_KEY, 0),
-                    intent.getDoubleExtra(LONGITUDE_KEY, 0));
+                    intent.getDoubleExtra(USER_LATITUDE_KEY, 0),
+                    intent.getDoubleExtra(USER_LONGITUDE_KEY, 0));
         }
 
-        presenter.onStart(partnerId, userPosition);
+        presenter.onStart(partnerId, pointLocation, userPosition);
     }
 
     @OnClick(R.id.description_button)
@@ -129,9 +139,9 @@ public class DepositionPointDetailActivity
     private void toggleSection(ExpandHeader header, final View content) {
         boolean show = header.toggle();
         if (show) {
-            ViewHelpers.expand(content);
+            ViewUtils.expand(content);
         } else {
-            ViewHelpers.collapse(content);
+            ViewUtils.collapse(content);
         }
     }
 
@@ -142,10 +152,16 @@ public class DepositionPointDetailActivity
 
     @Override
     public void showPartner(DepositionPartner partner) {
+        setTitle(partner.getName());
         description.setText(partner.getDescription());
         depositionTime.setText(partner.getDepositionDuration());
         depositionPointType.setText(partner.getPointType());
         oneTimeRestrictions.setText(partner.getLimitations());
+    }
+
+    @Override
+    public void finishActivity() {
+        finish();
     }
 }
 
