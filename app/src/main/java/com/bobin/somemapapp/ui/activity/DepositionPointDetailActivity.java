@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -180,10 +179,10 @@ public class DepositionPointDetailActivity
     @Override
     public void showPartner(DepositionPartner partner) {
         setTitle(partner.getName());
-        description.setText(partner.getDescription());
-        depositionTime.setText(partner.getDepositionDuration());
-        depositionPointType.setText(partner.getPointType());
-        oneTimeRestrictions.setText(partner.getLimitations());
+        description.setText(ViewUtils.toHtml(partner.getDescription()));
+        depositionTime.setText(ViewUtils.toHtml(partner.getDepositionDuration()));
+        depositionPointType.setText(ViewUtils.toHtml(partner.getPointType()));
+        oneTimeRestrictions.setText(ViewUtils.toHtml(partner.getLimitations()));
         Glide.with(partnerIcon)
                 .load(partner.getFullPictureUrl())
                 .apply(new RequestOptions().circleCrop())

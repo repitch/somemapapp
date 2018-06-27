@@ -1,9 +1,14 @@
 package com.bobin.somemapapp.utils;
 
+import android.content.Context;
+import android.graphics.Typeface;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.Transformation;
+import android.widget.TextView;
 
 // part of com.material.components project
 public final class ViewUtils {
@@ -34,6 +39,26 @@ public final class ViewUtils {
 
         a.setDuration((int) (initialHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a);
+    }
+
+    public static void changeAllTextViewsToCustomFont(ViewGroup container) {
+        Context context = container.getContext();
+        for (int i = 0; i < container.getChildCount(); ++i) {
+            View view = container.getChildAt(i);
+            if (view instanceof TextView) {
+                TextView textView = (TextView) view;
+                Typeface myCustomFont = getCustomTypeface(context);
+                textView.setTypeface(myCustomFont);
+            }
+        }
+    }
+
+    public static Typeface getCustomTypeface(Context context) {
+        return Typeface.createFromAsset(context.getAssets(), "SourceSansPro-Regular.ttf");
+    }
+
+    public static Spanned toHtml(String html) {
+        return Html.fromHtml(html);
     }
 
     private static Animation expandAction(final View v) {

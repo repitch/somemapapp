@@ -21,7 +21,7 @@
             android:layout_marginTop="22dp"
             android:transitionName="partner_icon" />
 
-        <TextView
+        <com.bobin.somemapapp.ui.custom.MapAppTextView
             android:id="@+id/address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
             android:textColor="@color/dark_grey"
             tools:text="г Москва, пл Манежная, д 1 стр 2" />
 
-        <TextView
+        <com.bobin.somemapapp.ui.custom.MapAppTextView
             android:id="@+id/distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
             android:padding="16dp"
             android:visibility="gone">
 
-            <TextView
+            <com.bobin.somemapapp.ui.custom.MapAppTextView
                 android:id="@+id/description_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
             android:padding="16dp"
             android:visibility="gone">
 
-            <TextView
+            <com.bobin.somemapapp.ui.custom.MapAppTextView
                 android:id="@+id/deposition_time_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -115,7 +115,7 @@
             android:padding="16dp"
             android:visibility="gone">
 
-            <TextView
+            <com.bobin.somemapapp.ui.custom.MapAppTextView
                 android:id="@+id/deposition_point_type_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -156,7 +156,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
-                <TextView
+                <com.bobin.somemapapp.ui.custom.MapAppTextView
                     android:id="@+id/money_restrictions"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -166,7 +166,7 @@
                     tools:text="от 100 до 1000000" />
             </LinearLayout>
 
-            <TextView
+            <com.bobin.somemapapp.ui.custom.MapAppTextView
                 android:id="@+id/one_time_restrictions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -182,11 +182,12 @@
             android:layout_height="1px"
             android:background="@color/light_grey" />
 
-        <TextView
+        <com.bobin.somemapapp.ui.custom.MapAppTextView
             android:id="@+id/go_to_web_site"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="48dp"
             android:layout_marginTop="48dp"
             android:text="@string/go_to_web_site" />
     </LinearLayout>

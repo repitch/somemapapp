@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsPagerAdapter;
+import com.bobin.somemapapp.utils.ViewUtils;
 
 import java.util.List;
 
@@ -50,6 +51,7 @@ public class DepositionPointsActivity
         tabLayout.addTab(tabLayout.newTab().setText(R.string.points), 1);
         tabLayout.addOnTabSelectedListener(this);
         viewPager.addOnPageChangeListener(this);
+        ViewUtils.changeAllTextViewsToCustomFont(toolbar);
     }
 
     @Override

@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
+    <com.bobin.somemapapp.ui.custom.MapAppTextView
         android:id="@+id/partner_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         android:textStyle="bold"
         tools:text="TINKOFF" />
 
-    <TextView
+    <com.bobin.somemapapp.ui.custom.MapAppTextView
         android:id="@+id/full_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

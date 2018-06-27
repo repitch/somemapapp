@@ -29,7 +29,7 @@
                     android:layout_height="54dp"
                     android:transitionName="partner_icon" />
 
-                <TextView
+                <com.bobin.somemapapp.ui.custom.MapAppTextView
                     android:id="@+id/name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
                     tools:text="EUROSET" />
             </LinearLayout>
 
-            <TextView
+            <com.bobin.somemapapp.ui.custom.MapAppTextView
                 android:id="@+id/address_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -49,7 +49,7 @@
                 android:text="@string/address_label"
                 android:textSize="14sp" />
 
-            <TextView
+            <com.bobin.somemapapp.ui.custom.MapAppTextView
                 android:id="@+id/address"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
                 android:textSize="14sp"
                 tools:text="г Москва, пл Манежная, д 1 стр 2" />
 
-            <TextView
+            <com.bobin.somemapapp.ui.custom.MapAppTextView
                 android:id="@+id/hours_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
                 android:text="@string/work_hours_label"
                 android:textSize="14sp" />
 
-            <TextView
+            <com.bobin.somemapapp.ui.custom.MapAppTextView
                 android:id="@+id/hours"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
