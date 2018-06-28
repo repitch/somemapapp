@@ -5,11 +5,13 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.infrastructure.PartnersService;
 import com.bobin.somemapapp.infrastructure.PartnersServiceImpl;
+import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.network.api.TinkoffApiFactory;
 import com.bobin.somemapapp.storage.KeyValueStorageImpl;
 import com.bobin.somemapapp.storage.PartnersCacheImpl;
 import com.bobin.somemapapp.ui.view.DepositionPointsListView;
+import com.bobin.somemapapp.utils.GoogleMapUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +33,24 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
         compositeDisposable = new CompositeDisposable();
     }
 
-    public void updateList(final List<DepositionPoint> points) {
+    public void updateList(List<DepositionPoint> points, MapCoordinates userLocation) {
+
+        final List<DepositionPoint> sortedPoints;
+
+        if (userLocation != null) {
+            sortedPoints = Observable.fromIterable(points)
+                    .sorted((x, y) -> {
+                        float dx = GoogleMapUtils.distanceBetween(x.getMapCoordinates(), userLocation);
+                        float dy = GoogleMapUtils.distanceBetween(y.getMapCoordinates(), userLocation);
+                        return Float.compare(dx, dy);
+                    })
+                    .toList()
+                    .blockingGet();
+        } else {
+            sortedPoints = points;
+        }
+
+
         Disposable subscribe = Observable.fromIterable(points)
                 .map(DepositionPoint::getPartnerName)
                 .distinct()
@@ -41,7 +60,7 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
                 .flatMapIterable(x -> x)
                 .collect((Callable<HashMap<String, String>>) HashMap::new, (m, p) -> m.put(p.getId(), p.getFullPictureUrl()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(m -> getViewState().updateList(points, m));
+                .subscribe(m -> getViewState().updateList(sortedPoints, m));
         compositeDisposable.add(subscribe);
     }
 

@@ -3,6 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:foreground="?android:attr/selectableItemBackground"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="16dp">
@@ -12,16 +13,17 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginRight="16dp" />
+        android:layout_marginRight="16dp"
+        android:src="@drawable/baseline_access_time_black_24" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <com.bobin.somemapapp.ui.custom.MapAppTextView
             android:id="@+id/partner_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:textColor="@color/black"
@@ -30,9 +32,17 @@
             tools:text="TINKOFF" />
 
         <com.bobin.somemapapp.ui.custom.MapAppTextView
+            android:id="@+id/distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            tools:text="200 метров" />
+
+        <com.bobin.somemapapp.ui.custom.MapAppTextView
             android:id="@+id/full_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/partner_name"
             tools:text="ТЦ Кит, 1 этаж, зона банкоматов, Амундсена, 65" />
-    </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>

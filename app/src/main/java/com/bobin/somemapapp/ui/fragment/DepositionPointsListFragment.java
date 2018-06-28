@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bobin.somemapapp.R;
+import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.presenter.DepositionPointsListPresenter;
 import com.bobin.somemapapp.ui.activity.DepositionPointDetailActivity;
@@ -37,6 +38,7 @@ public class DepositionPointsListFragment
     DepositionPointsListPresenter presenter;
     private Unbinder unbinder;
     private DepositionPointsListAdapter adapter;
+    private MapCoordinates userLocation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,17 +74,18 @@ public class DepositionPointsListFragment
         unbinder.unbind();
     }
 
-    public void updateList(List<DepositionPoint> points) {
-        presenter.updateList(points);
+    public void updateList(List<DepositionPoint> points, MapCoordinates userLocation) {
+        presenter.updateList(points, userLocation);
+        this.userLocation = userLocation;
     }
 
     @Override
     public void updateList(List<DepositionPoint> points, HashMap<String, String> icons) {
-        adapter.setDataset(points, icons);
+        adapter.setDataset(points, icons, userLocation);
     }
 
     @Override
     public void onClickPoint(DepositionPoint point, View iconView) {
-        DepositionPointDetailActivity.start(getActivity(), point, null, iconView);
+        DepositionPointDetailActivity.start(getActivity(), point, userLocation, iconView);
     }
 }

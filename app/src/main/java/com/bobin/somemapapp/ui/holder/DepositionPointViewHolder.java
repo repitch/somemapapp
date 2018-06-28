@@ -9,7 +9,10 @@ import android.widget.TextView;
 import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsListAdapter;
+import com.bobin.somemapapp.utils.GoogleMapUtils;
 import com.bobin.somemapapp.utils.ViewUtils;
+
+import org.w3c.dom.Text;
 
 import java.util.UUID;
 
@@ -24,6 +27,8 @@ public class DepositionPointViewHolder extends RecyclerView.ViewHolder implement
     TextView fullAddress;
     @BindView(R.id.point_icon)
     ImageView pointIcon;
+    @BindView(R.id.distance)
+    TextView distance;
     private DepositionPoint point;
     private int position;
     private DepositionPointsListAdapter.PointClickListener clickListener;
@@ -42,7 +47,7 @@ public class DepositionPointViewHolder extends RecyclerView.ViewHolder implement
 
     public static int layoutId = R.layout.item_deposition_point;
 
-    public void bind(DepositionPoint point, String icon, int position) {
+    public void bind(DepositionPoint point, String icon, int position, int meters) {
         this.point = point;
         this.position = position;
 
@@ -51,6 +56,8 @@ public class DepositionPointViewHolder extends RecyclerView.ViewHolder implement
 
         partnerName.setText(point.getPartnerName());
         fullAddress.setText(point.getFullAddress());
+        distance.setVisibility(meters != -1 ? View.VISIBLE : View.GONE);
+        distance.setText(GoogleMapUtils.distanceToString(distance.getContext(), meters));
         ViewUtils.glideRoundImage(pointIcon, icon);
     }
 

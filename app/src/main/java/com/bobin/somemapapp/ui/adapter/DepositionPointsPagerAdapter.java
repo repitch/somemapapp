@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.fragment.DepositionPointsListFragment;
 import com.bobin.somemapapp.ui.fragment.MapFragment;
@@ -34,7 +35,7 @@ public class DepositionPointsPagerAdapter extends FragmentPagerAdapter {
         return 2;
     }
 
-    public void updatePointsList(List<DepositionPoint> points) {
+    public void updatePointsList(List<DepositionPoint> points, MapCoordinates userLocation) {
         List<Fragment> fragments = fm.getFragments();
 
         if (fragments == null)
@@ -43,7 +44,7 @@ public class DepositionPointsPagerAdapter extends FragmentPagerAdapter {
             if (fragment == null)
                 continue;
             if (fragment instanceof DepositionPointsListFragment) {
-                ((DepositionPointsListFragment) fragment).updateList(points);
+                ((DepositionPointsListFragment) fragment).updateList(points, userLocation);
                 return;
             }
         }

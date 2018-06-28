@@ -1,10 +1,13 @@
 package com.bobin.somemapapp.ui.custom;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -14,7 +17,11 @@ import android.widget.TextView;
 import com.bobin.somemapapp.R;
 
 public class ExpandHeader extends FrameLayout {
+    private static final int ANIMATION_DURATION = 200;
     private ImageView arrow;
+    private ImageView icon;
+    private TextView title;
+    private boolean state;
 
     public ExpandHeader(@NonNull Context context) {
         super(context);
@@ -33,9 +40,11 @@ public class ExpandHeader extends FrameLayout {
 
     private void init(Context context, AttributeSet attrs) {
         View view = inflate(context, R.layout.item_expand_header, this);
-        ImageView icon = view.findViewById(R.id.header_icon);
-        TextView title = view.findViewById(R.id.title);
+        icon = view.findViewById(R.id.header_icon);
+        title = view.findViewById(R.id.title);
         arrow = view.findViewById(R.id.arrow);
+        title.setAlpha(0.5f);
+        icon.setAlpha(0.5f);
 
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
@@ -51,10 +60,19 @@ public class ExpandHeader extends FrameLayout {
         }
     }
 
-    private boolean state;
-
     public boolean toggle() {
         state = !state;
+        title.animate().setDuration(ANIMATION_DURATION).alpha(state ? 1 : 0.5f);
+        icon.animate().setDuration(ANIMATION_DURATION).alpha(state ? 1 : 0.5f);
+        toggleArrow(arrow);
         return state;
+    }
+
+    private void toggleArrow(View view) {
+        if (view.getRotation() == 0) {
+            view.animate().setDuration(ANIMATION_DURATION).rotation(180);
+        } else {
+            view.animate().setDuration(ANIMATION_DURATION).rotation(0);
+        }
     }
 }

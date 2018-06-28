@@ -41,6 +41,7 @@ import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapFragment
@@ -121,15 +122,18 @@ public class MapFragment
         clusterManager.clearItems();
 
         Log.d("MapFragment", "adding pins: " + pins.size());
+        List<DepositionPointClusterItem> items = new ArrayList<>();
 
         for (DepositionPoint pin : pins) {
-            clusterManager.addItem(new DepositionPointClusterItem(
+            items.add(new DepositionPointClusterItem(
                     pin.getLatitude(),
                     pin.getLongitude(),
                     pin.getPartnerName()));
         }
-
-        depositionPointsChangedListener.onChangeDepositionPoints(pins);
+        clusterManager.addItems(items);
+        clusterManager.cluster();
+        if (depositionPointsChangedListener != null)
+            depositionPointsChangedListener.onChangeDepositionPoints(pins, currentUserLocation);
     }
 
     @Override

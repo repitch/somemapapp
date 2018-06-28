@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.bobin.somemapapp.R;
+import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsPagerAdapter;
 import com.bobin.somemapapp.utils.ViewUtils;
@@ -88,8 +89,8 @@ public class DepositionPointsActivity
     }
 
     @Override
-    public void onChangeDepositionPoints(List<DepositionPoint> points) {
-        fragmentsAdapter.updatePointsList(points);
+    public void onChangeDepositionPoints(List<DepositionPoint> points, MapCoordinates userLocation) {
+        fragmentsAdapter.updatePointsList(points, userLocation);
         tabLayout.getTabAt(1).setText(getString(R.string.points) + " (" + points.size() + ")");
     }
 }

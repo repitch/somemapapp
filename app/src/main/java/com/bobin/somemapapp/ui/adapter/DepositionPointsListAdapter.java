@@ -6,17 +6,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.holder.DepositionPointViewHolder;
+import com.bobin.somemapapp.utils.GoogleMapUtils;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class DepositionPointsListAdapter extends RecyclerView.Adapter<DepositionPointViewHolder> {
 
-
     private List<DepositionPoint> points;
     private HashMap<String, String> icons;
+    private MapCoordinates userLocation;
     private PointClickListener clickListener;
 
     @NonNull
@@ -38,7 +40,10 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
     public void onBindViewHolder(@NonNull DepositionPointViewHolder holder,
                                  int position) {
         DepositionPoint point = getPoint(position);
-        holder.bind(point, icons.get(point.getPartnerName()), position);
+        int meters = -1;
+        if (userLocation != null)
+            meters = (int) GoogleMapUtils.distanceBetween(userLocation, point.getMapCoordinates());
+        holder.bind(point, icons.get(point.getPartnerName()), position, meters);
     }
 
     @Override
@@ -50,9 +55,10 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
         return points.get(position);
     }
 
-    public void setDataset(List<DepositionPoint> points, HashMap<String, String> icons) {
+    public void setDataset(List<DepositionPoint> points, HashMap<String, String> icons, MapCoordinates userLocation) {
         this.points = points;
         this.icons = icons;
+        this.userLocation = userLocation;
         notifyDataSetChanged();
     }
 
