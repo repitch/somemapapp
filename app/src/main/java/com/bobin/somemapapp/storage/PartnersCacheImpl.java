@@ -42,7 +42,7 @@ public class PartnersCacheImpl implements PartnersCache {
                 .in("id", ids)
                 .findAll();
 
-        if (partners == null || partners.size() == 0)
+        if (partners == null)
             return null;
 
         return realm.copyFromRealm(partners);

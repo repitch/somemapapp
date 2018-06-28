@@ -1,5 +1,6 @@
 package com.bobin.somemapapp.ui.activity;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
@@ -77,11 +78,17 @@ public class DepositionPointDetailActivity
 
     private Unbinder unbinder;
 
-    public static void start(@Nonnull Context context,
+    public static void start(@Nonnull Activity activity,
                              @Nonnull DepositionPoint point,
                              @Nullable MapCoordinates userPosition,
-                             @Nullable ActivityOptions activityOptions) {
-        Intent intent = new Intent(context, DepositionPointDetailActivity.class)
+                             @Nullable View iconView) {
+        ActivityOptions activityOptions = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            activityOptions = ActivityOptions.makeSceneTransitionAnimation(
+                    activity, iconView, "partner_icon");
+        }
+
+        Intent intent = new Intent(activity, DepositionPointDetailActivity.class)
                 .putExtra(PARTNER_ID_KEY, point.getPartnerName())
                 .putExtra(POINT_LATITUDE_KEY, point.getLatitude())
                 .putExtra(POINT_LONGITUDE_KEY, point.getLongitude())
@@ -93,9 +100,9 @@ public class DepositionPointDetailActivity
         }
 
         if (activityOptions == null)
-            context.startActivity(intent);
+            activity.startActivity(intent);
         else
-            context.startActivity(intent, activityOptions.toBundle());
+            activity.startActivity(intent, activityOptions.toBundle());
     }
 
     @Override

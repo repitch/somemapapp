@@ -14,6 +14,7 @@ import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.presenter.DepositionPointsListPresenter;
+import com.bobin.somemapapp.ui.activity.DepositionPointDetailActivity;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsListAdapter;
 import com.bobin.somemapapp.ui.view.DepositionPointsListView;
 
@@ -26,7 +27,7 @@ import butterknife.Unbinder;
 
 public class DepositionPointsListFragment
         extends MvpAppCompatFragment
-        implements DepositionPointsListView {
+        implements DepositionPointsListView, DepositionPointsListAdapter.PointClickListener {
     @BindView(R.id.deposition_points_list)
     RecyclerView recyclerView;
 
@@ -39,6 +40,7 @@ public class DepositionPointsListFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adapter = new DepositionPointsListAdapter();
+        adapter.setClickListener(this);
     }
 
     @Nullable
@@ -73,5 +75,10 @@ public class DepositionPointsListFragment
     @Override
     public void updateList(List<DepositionPoint> points, HashMap<String, String> icons) {
         adapter.setDataset(points, icons);
+    }
+
+    @Override
+    public void onClickPoint(DepositionPoint point, View iconView) {
+        DepositionPointDetailActivity.start(getActivity(), point, null, iconView);
     }
 }

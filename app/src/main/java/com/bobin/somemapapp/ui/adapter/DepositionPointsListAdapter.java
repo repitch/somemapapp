@@ -13,8 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DepositionPointsListAdapter extends RecyclerView.Adapter<DepositionPointViewHolder> {
+
+
     private List<DepositionPoint> points;
     private HashMap<String, String> icons;
+    private PointClickListener clickListener;
 
     @NonNull
     @Override
@@ -24,15 +27,18 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
                 DepositionPointViewHolder.layoutId,
                 parent,
                 false);
+        return new DepositionPointViewHolder(view).withClickListener(clickListener);
+    }
 
-        return new DepositionPointViewHolder(view);
+    public void setClickListener(PointClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 
     @Override
     public void onBindViewHolder(@NonNull DepositionPointViewHolder holder,
                                  int position) {
         DepositionPoint point = getPoint(position);
-        holder.bind(point, icons.get(point.getPartnerName()));
+        holder.bind(point, icons.get(point.getPartnerName()), position);
     }
 
     @Override
@@ -48,5 +54,9 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
         this.points = points;
         this.icons = icons;
         notifyDataSetChanged();
+    }
+
+    public interface PointClickListener {
+        void onClickPoint(DepositionPoint point, View iconView);
     }
 }

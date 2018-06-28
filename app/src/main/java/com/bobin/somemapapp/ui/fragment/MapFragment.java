@@ -144,17 +144,11 @@ public class MapFragment
     }
 
     private void onBottomSheetClick(DepositionPoint point, View iconView) {
-        ActivityOptions activityOptions = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            activityOptions = ActivityOptions.makeSceneTransitionAnimation(
-                    getActivity(), iconView, "partner_icon");
-        }
-
         DepositionPointDetailActivity.start(
-                getContext(),
+                getActivity(),
                 point,
                 currentUserLocation,
-                activityOptions);
+                iconView);
     }
 
     @Override
