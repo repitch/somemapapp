@@ -1,9 +1,11 @@
 package com.bobin.somemapapp.ui.fragment;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.transition.Fade;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +79,9 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
         currentPoint = (DepositionPoint) arguments.getSerializable(POINT_KEY);
         pointName = arguments.getString(NAME_KEY);
         pointIcon = arguments.getString(ICON_KEY);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            setExitTransition(new Fade());
     }
 
     @Override

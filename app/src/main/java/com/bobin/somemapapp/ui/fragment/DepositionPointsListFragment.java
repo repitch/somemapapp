@@ -1,8 +1,10 @@
 package com.bobin.somemapapp.ui.fragment;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.transition.Fade;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -60,6 +62,8 @@ public class DepositionPointsListFragment
                 getContext(),
                 LinearLayoutManager.VERTICAL,
                 false));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            setExitTransition(new Fade());
     }
 
     @Override

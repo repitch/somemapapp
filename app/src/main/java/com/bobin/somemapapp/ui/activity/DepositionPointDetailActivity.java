@@ -1,10 +1,12 @@
 package com.bobin.somemapapp.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.View;
@@ -43,6 +45,7 @@ public class DepositionPointDetailActivity
     private static final String POINT_LATITUDE_KEY = "pLatitude";
     private static final String POINT_LONGITUDE_KEY = "pLongitude";
     private static final String POINT_ADDRESS_KEY = "pAddress";
+    private static final String TRANSITION_NAME_KEY = "transitionName";
 
     @BindView(R.id.description_content)
     FrameLayout descriptionContent;
@@ -83,9 +86,9 @@ public class DepositionPointDetailActivity
                              @Nullable MapCoordinates userPosition,
                              @Nullable View iconView) {
         ActivityOptions activityOptions = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && iconView != null) {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(
-                    activity, iconView, "partner_icon");
+                    activity, iconView, iconView.getTransitionName());
         }
 
         Intent intent = new Intent(activity, DepositionPointDetailActivity.class)
@@ -93,6 +96,10 @@ public class DepositionPointDetailActivity
                 .putExtra(POINT_LATITUDE_KEY, point.getLatitude())
                 .putExtra(POINT_LONGITUDE_KEY, point.getLongitude())
                 .putExtra(POINT_ADDRESS_KEY, point.getFullAddress());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && iconView != null)
+            intent.putExtra(TRANSITION_NAME_KEY, iconView.getTransitionName());
+
 
         if (userPosition != null) {
             intent.putExtra(USER_LATITUDE_KEY, userPosition.getLatitude())
@@ -127,6 +134,9 @@ public class DepositionPointDetailActivity
                     intent.getDoubleExtra(USER_LATITUDE_KEY, 0),
                     intent.getDoubleExtra(USER_LONGITUDE_KEY, 0));
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && intent.hasExtra(TRANSITION_NAME_KEY))
+            partnerIcon.setTransitionName(intent.getStringExtra(TRANSITION_NAME_KEY));
 
         address.setText(pointAddress);
 
@@ -190,6 +200,9 @@ public class DepositionPointDetailActivity
         depositionTime.setText(ViewUtils.toHtml(partner.getDepositionDuration()));
         depositionPointType.setText(ViewUtils.toHtml(partner.getPointType()));
         oneTimeRestrictions.setText(ViewUtils.toHtml(partner.getLimitations()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            startPostponedEnterTransition();
+
         ViewUtils.glideRoundImage(partnerIcon, partner.getFullPictureUrl());
     }
 

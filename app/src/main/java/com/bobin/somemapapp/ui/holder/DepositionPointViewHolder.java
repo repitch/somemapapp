@@ -1,5 +1,6 @@
 package com.bobin.somemapapp.ui.holder;
 
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +10,8 @@ import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsListAdapter;
 import com.bobin.somemapapp.utils.ViewUtils;
+
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +45,10 @@ public class DepositionPointViewHolder extends RecyclerView.ViewHolder implement
     public void bind(DepositionPoint point, String icon, int position) {
         this.point = point;
         this.position = position;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            pointIcon.setTransitionName(point.getPartnerName() + UUID.randomUUID());
+
         partnerName.setText(point.getPartnerName());
         fullAddress.setText(point.getFullAddress());
         ViewUtils.glideRoundImage(pointIcon, icon);

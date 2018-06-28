@@ -18,8 +18,7 @@
             android:layout_height="70dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="16dp"
-            android:layout_marginTop="22dp"
-            android:transitionName="partner_icon" />
+            android:layout_marginTop="22dp" />
 
         <com.bobin.somemapapp.ui.custom.MapAppTextView
             android:id="@+id/address"
