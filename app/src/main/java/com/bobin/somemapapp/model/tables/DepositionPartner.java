@@ -1,7 +1,8 @@
 package com.bobin.somemapapp.model.tables;
 
-import com.bobin.somemapapp.model.MapCoordinates;
+import java.util.List;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -17,6 +18,7 @@ public class DepositionPartner extends RealmObject {
     private String limitations;
     private String pointType;
     private String description;
+    private RealmList<Limit> limits;
 
     public String getFullPictureUrl() {
         return "https://static.tinkoff.ru/icons/deposition-partners-v3/mdpi/" + getPicture();
@@ -100,5 +102,14 @@ public class DepositionPartner extends RealmObject {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Limit> getLimits() {
+        return limits;
+    }
+
+    public void setLimits(List<Limit> limits) {
+        this.limits = new RealmList<>();
+        this.limits.addAll(limits);
     }
 }

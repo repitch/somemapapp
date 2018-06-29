@@ -12,4 +12,7 @@
     <string name="meters">метров</string>
     <string name="km">км</string>
     <string name="go_to_web_site">Перейти на веб-сайт</string>
+    <string name="from">от</string>
+    <string name="to">до</string>
+    <string name="amount">всего</string>
 </resources>

@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class DepositionPartnerResponse implements Serializable {
 
@@ -37,6 +38,9 @@ public class DepositionPartnerResponse implements Serializable {
     @SerializedName("description")
     @Expose
     private String description;
+    @SerializedName("limits")
+    @Expose
+    private List<LimitResponse> limits;
 
     public String getId() {
         return id;
@@ -116,5 +120,13 @@ public class DepositionPartnerResponse implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<LimitResponse> getLimits() {
+        return limits;
+    }
+
+    public void setLimits(List<LimitResponse> limits) {
+        this.limits = limits;
     }
 }

@@ -1,9 +1,16 @@
 package com.bobin.somemapapp.utils;
 
+import com.bobin.somemapapp.model.response.CurrencyResponse;
 import com.bobin.somemapapp.model.response.DepositionPartnerResponse;
 import com.bobin.somemapapp.model.response.DepositionPointResponse;
+import com.bobin.somemapapp.model.response.LimitResponse;
+import com.bobin.somemapapp.model.tables.Currency;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
+import com.bobin.somemapapp.model.tables.Limit;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class StorageUtils {
     public static DepositionPoint convert(DepositionPointResponse response) {
@@ -29,6 +36,24 @@ public final class StorageUtils {
         depositionPartner.setLimitations(response.getLimitations());
         depositionPartner.setPointType(response.getPointType());
         depositionPartner.setDescription(response.getDescription());
+        depositionPartner.setLimits(convert(response.getLimits()));
         return depositionPartner;
+    }
+
+    private static List<Limit> convert(List<LimitResponse> limitsResponse) {
+        List<Limit> result = new ArrayList<>(limitsResponse.size());
+        for (LimitResponse limitResponse : limitsResponse) {
+            CurrencyResponse currencyResponse = limitResponse.getCurrency();
+            Currency currency = new Currency();
+            currency.setCode(currencyResponse.getCode());
+            currency.setName(currencyResponse.getName());
+            Limit limit = new Limit();
+            limit.setCurrency(currency);
+            limit.setAmount(limitResponse.getAmount());
+            limit.setMax(limitResponse.getMax());
+            limit.setMin(limitResponse.getMin());
+            result.add(limit);
+        }
+        return result;
     }
 }

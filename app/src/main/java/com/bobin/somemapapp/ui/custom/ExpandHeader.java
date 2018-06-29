@@ -21,7 +21,6 @@ public class ExpandHeader extends FrameLayout {
     private ImageView arrow;
     private ImageView icon;
     private TextView title;
-    private boolean state;
 
     public ExpandHeader(@NonNull Context context) {
         super(context);
@@ -61,18 +60,19 @@ public class ExpandHeader extends FrameLayout {
     }
 
     public boolean toggle() {
-        state = !state;
+        boolean state = toggleArrow(arrow);
         title.animate().setDuration(ANIMATION_DURATION).alpha(state ? 1 : 0.5f);
         icon.animate().setDuration(ANIMATION_DURATION).alpha(state ? 1 : 0.5f);
-        toggleArrow(arrow);
         return state;
     }
 
-    private void toggleArrow(View view) {
+    private boolean toggleArrow(View view) {
         if (view.getRotation() == 0) {
             view.animate().setDuration(ANIMATION_DURATION).rotation(180);
+            return true;
         } else {
             view.animate().setDuration(ANIMATION_DURATION).rotation(0);
+            return false;
         }
     }
 }

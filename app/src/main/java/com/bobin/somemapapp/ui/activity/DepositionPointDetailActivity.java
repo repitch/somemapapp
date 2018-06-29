@@ -10,6 +10,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +22,7 @@ import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
+import com.bobin.somemapapp.model.tables.Limit;
 import com.bobin.somemapapp.presenter.DepositionPointDetailPresenter;
 import com.bobin.somemapapp.ui.custom.ExpandHeader;
 import com.bobin.somemapapp.ui.view.DepositionPointDetailView;
@@ -27,6 +30,9 @@ import com.bobin.somemapapp.utils.GoogleMapUtils;
 import com.bobin.somemapapp.utils.ViewUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +44,7 @@ import butterknife.Unbinder;
 
 public class DepositionPointDetailActivity
         extends MvpAppCompatActivity
-        implements DepositionPointDetailView {
+        implements DepositionPointDetailView, AdapterView.OnItemSelectedListener {
     private static final String PARTNER_ID_KEY = "partnerId";
     private static final String USER_LATITUDE_KEY = "uLatitude";
     private static final String USER_LONGITUDE_KEY = "uLongitude";
@@ -117,7 +123,7 @@ public class DepositionPointDetailActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deposition_point_detail);
         unbinder = ButterKnife.bind(this);
-
+        restrictionsSelector.setOnItemSelectedListener(this);
         notifyPresenterStart(getIntent());
     }
 
@@ -200,6 +206,19 @@ public class DepositionPointDetailActivity
         depositionTime.setText(ViewUtils.toHtml(partner.getDepositionDuration()));
         depositionPointType.setText(ViewUtils.toHtml(partner.getPointType()));
         oneTimeRestrictions.setText(ViewUtils.toHtml(partner.getLimitations()));
+
+        List<Limit> filtered = new ArrayList<>();
+        for (Limit limit : partner.getLimits()) {
+            if (!limit.isEmpty())
+                filtered.add(limit);
+        }
+
+        restrictionsSelector.setAdapter(new ArrayAdapter<>(
+                restrictionsSelector.getContext(),
+                R.layout.item_spinner,
+                R.id.text,
+                filtered));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             startPostponedEnterTransition();
 
@@ -214,6 +233,22 @@ public class DepositionPointDetailActivity
     @Override
     public void openBrowser(Uri uri) {
         startActivity(new Intent(Intent.ACTION_VIEW, uri));
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        Limit limit = presenter.getLimit(position);
+        moneyRestrictions.setText(getDescription(limit));
+    }
+
+    private String getDescription(Limit limit) {
+        if (limit.getAmount() == 0)
+            return getString(R.string.from) + " " + limit.getMin() + " " + getString(R.string.to) + " " + limit.getMax();
+        return getString(R.string.amount) + ": " + limit.getAmount();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
     }
 }
 

@@ -9,6 +9,7 @@ import com.bobin.somemapapp.infrastructure.PartnersService;
 import com.bobin.somemapapp.infrastructure.PartnersServiceImpl;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
+import com.bobin.somemapapp.model.tables.Limit;
 import com.bobin.somemapapp.network.api.TinkoffApiFactory;
 import com.bobin.somemapapp.storage.KeyValueStorageImpl;
 import com.bobin.somemapapp.storage.PartnersCacheImpl;
@@ -29,6 +30,10 @@ public class DepositionPointDetailPresenter extends MvpPresenter<DepositionPoint
     public DepositionPointDetailPresenter() {
         partnersService = new PartnersServiceImpl(new TinkoffApiFactory().createApi(), new PartnersCacheImpl(new KeyValueStorageImpl(MapApp.context)));
         compositeDisposable = new CompositeDisposable();
+    }
+
+    public Limit getLimit(int id) {
+        return partner.getLimits().get(id);
     }
 
     public void onStart(String partnerId, MapCoordinates pointLocation, MapCoordinates userPosition) {
