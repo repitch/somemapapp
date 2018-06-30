@@ -1,6 +1,8 @@
 package com.bobin.somemapapp.model;
 
-public class MapCoordinates {
+import java.io.Serializable;
+
+public class MapCoordinates implements Serializable {
     private double latitude;
     private double longitude;
 

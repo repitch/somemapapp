@@ -10,8 +10,10 @@ import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.infrastructure.DepositionPointsService;
 import com.bobin.somemapapp.infrastructure.PartnersService;
 import com.bobin.somemapapp.model.CameraBounds;
+import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
+import com.bobin.somemapapp.storage.KeyValueStorage;
 import com.bobin.somemapapp.ui.view.MapView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -30,6 +32,8 @@ import io.reactivex.subjects.PublishSubject;
 
 @InjectViewState
 public class MapPresenter extends MvpPresenter<MapView> {
+    private static final String LAST_SCREEN_POSITION_KEY = "lastScreenPosition";
+
     private CompositeDisposable compositeDisposable;
     private PublishSubject<CameraBounds> cameraBoundsPublishSubject;
     private CircleWithPoints currentScreenData;
@@ -40,6 +44,9 @@ public class MapPresenter extends MvpPresenter<MapView> {
     @SuppressWarnings("WeakerAccess")
     @Inject
     PartnersService partnersService;
+    @SuppressWarnings("WeakerAccess")
+    @Inject
+    KeyValueStorage keyValueStorage;
 
     public MapPresenter() {
         compositeDisposable = new CompositeDisposable();
@@ -53,8 +60,20 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
         Disposable subscribe = new RxPermissions(activity)
                 .request(Manifest.permission.ACCESS_FINE_LOCATION)
-                .subscribe(b -> getViewState().setMyLocationButtonEnabled(b));
+                .subscribe(hasPermission -> {
+                    getViewState().setMyLocationButtonEnabled(hasPermission);
+                    moveToLastPosition();
+                });
         compositeDisposable.add(subscribe);
+    }
+
+    private void moveToLastPosition() {
+        MapCoordinates targetScreenLocation = keyValueStorage.getSerializable(
+                LAST_SCREEN_POSITION_KEY,
+                MapCoordinates.class,
+                new MapCoordinates(55.751244, 37.618423) // Moscow
+        );
+        getViewState().moveToPoint(targetScreenLocation);
     }
 
     @Override
@@ -123,6 +142,9 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     public void mapCameraStops(CameraBounds bounds) {
         cameraBoundsPublishSubject.onNext(bounds);
+        MapCoordinates mapCoordinates = new MapCoordinates(bounds.getCenter().getLatitude(),
+                bounds.getCenter().getLongitude());
+        keyValueStorage.save(LAST_SCREEN_POSITION_KEY, mapCoordinates);
     }
 
     private DepositionPoint findPoint(double latitude, double longitude) {

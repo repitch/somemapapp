@@ -29,7 +29,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.maps.android.clustering.ClusterManager;
@@ -51,6 +50,8 @@ public class MapFragment
     private GoogleMap map;
     private ClusterManager<DepositionPointClusterItem> clusterManager;
     private DepositionPointsChangedListener depositionPointsChangedListener;
+    private MapCoordinates currentUserLocation;
+    private boolean firstLaunch;
 
     @Override
     public void onAttach(Context context) {
@@ -81,6 +82,8 @@ public class MapFragment
         SupportMapFragment supportMapFragment = SupportMapFragment.newInstance();
         fm.beginTransaction().replace(R.id.map_container, supportMapFragment).commit();
         supportMapFragment.getMapAsync(this);
+
+        firstLaunch = savedInstanceState == null;
     }
 
     @Override
@@ -96,8 +99,6 @@ public class MapFragment
         map.setOnCameraIdleListener(this);
         map.setOnCameraMoveCanceledListener(this);
         map.setOnMarkerClickListener(this);
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(55.751244, 37.618423), 15));
     }
 
     @SuppressLint("MissingPermission")
@@ -139,6 +140,12 @@ public class MapFragment
         PointDetailBottomSheet.newInstance(point, name, iconUrl)
                 .setClickListener(this::onBottomSheetClick)
                 .show(fragmentManager, "PointDetailBottomSheet_" + name);
+    }
+
+    @Override
+    public void moveToPoint(MapCoordinates coordinates) {
+        if (map != null)
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtils.toLatLng(coordinates), 15));
     }
 
     private void onBottomSheetClick(DepositionPoint point, View iconView) {
@@ -187,10 +194,12 @@ public class MapFragment
         return clusterManager.onMarkerClick(marker);
     }
 
-    private MapCoordinates currentUserLocation;
-
     @Override
     public void onMyLocationChange(Location location) {
         currentUserLocation = GoogleMapUtils.toCoordinates(location);
+        if (firstLaunch) {
+            moveToPoint(GoogleMapUtils.toCoordinates(location));
+            firstLaunch = false;
+        }
     }
 }

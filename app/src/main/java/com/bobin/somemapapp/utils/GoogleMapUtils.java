@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class GoogleMapUtils {
+    public static LatLng toLatLng(Location location) {
+        return new LatLng(location.getLatitude(), location.getLongitude());
+    }
+
     public static LatLng toLatLng(MapCoordinates coordinates) {
         return new LatLng(coordinates.getLatitude(), coordinates.getLongitude());
     }
