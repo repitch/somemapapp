@@ -4,8 +4,6 @@ import android.app.Application;
 import android.content.Context;
 
 import com.bobin.somemapapp.model.ScreenDensityUrlCalculator;
-import com.bobin.somemapapp.network.NetworkAvailability;
-import com.bobin.somemapapp.network.NetworkAvailabilityImpl;
 
 import javax.inject.Singleton;
 
@@ -24,12 +22,6 @@ public class ApplicationModule {
     @Singleton
     Context provideContext() {
         return application;
-    }
-
-    @Provides
-    @Singleton
-    public NetworkAvailability provideNetworkAvailability(Context context) {
-        return new NetworkAvailabilityImpl(context);
     }
 
     @Provides

@@ -11,7 +11,6 @@ import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.ScreenDensityUrlCalculator;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.Limit;
-import com.bobin.somemapapp.network.NetworkAvailability;
 import com.bobin.somemapapp.ui.view.DepositionPointDetailView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 
@@ -32,8 +31,6 @@ public class DepositionPointDetailPresenter extends MvpPresenter<DepositionPoint
     PartnersService partnersService;
     @Inject
     PointWatchedService watchedService;
-    @Inject
-    NetworkAvailability networkAvailability;
     @Inject
     ScreenDensityUrlCalculator urlCalculator;
 

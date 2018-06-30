@@ -14,7 +14,6 @@ import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.ScreenDensityUrlCalculator;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
-import com.bobin.somemapapp.network.NetworkAvailability;
 import com.bobin.somemapapp.storage.KeyValueStorage;
 import com.bobin.somemapapp.ui.view.MapView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
@@ -47,8 +46,6 @@ public class MapPresenter extends MvpPresenter<MapView> {
     PartnersService partnersService;
     @Inject
     KeyValueStorage keyValueStorage;
-    @Inject
-    NetworkAvailability networkAvailability;
     @Inject
     ScreenDensityUrlCalculator urlCalculator;
 

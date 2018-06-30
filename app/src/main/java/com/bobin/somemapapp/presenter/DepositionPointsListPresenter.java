@@ -9,7 +9,6 @@ import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.ScreenDensityUrlCalculator;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
-import com.bobin.somemapapp.network.NetworkAvailability;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsListAdapter;
 import com.bobin.somemapapp.ui.view.DepositionPointsListView;
 import com.bobin.somemapapp.utils.CollectionUtils;
@@ -36,8 +35,6 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
     PartnersService partnersService;
     @Inject
     PointWatchedService watchedService;
-    @Inject
-    NetworkAvailability networkAvailability;
     @Inject
     ScreenDensityUrlCalculator urlCalculator;
 
