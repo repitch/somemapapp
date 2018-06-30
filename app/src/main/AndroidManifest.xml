@@ -29,7 +29,7 @@
         </activity>
         <activity
             android:name=".ui.activity.DepositionPointDetailActivity"
-            android:parentActivityName=".ui.activity.DepositionPointsActivity" />
+            android:theme="@style/Theme.Design.Light.NoActionBar" />
     </application>
 
 </manifest>

@@ -1,196 +1,219 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:scrollingCache="true">
 
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@android:color/white"
+        android:fitsSystemWindows="true">
 
-        <ImageView
-            android:id="@+id/partner_icon"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="22dp" />
-
-        <com.bobin.somemapapp.ui.custom.MapAppTextView
-            android:id="@+id/address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="12dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:textAlignment="center"
-            android:textColor="@color/dark_grey"
-            tools:text="г Москва, пл Манежная, д 1 стр 2" />
-
-        <com.bobin.somemapapp.ui.custom.MapAppTextView
-            android:id="@+id/distance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="12dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:textAlignment="center"
-            android:textColor="@color/dark_grey"
-            tools:text="1200 метров" />
-
-        <com.bobin.somemapapp.ui.custom.ExpandHeader
-            android:id="@+id/description_button"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:header_icon="@drawable/baseline_description_black_24"
-            app:title="@string/description" />
+            app:contentInsetStartWithNavigation="0dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <FrameLayout
-            android:id="@+id/description_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:visibility="gone">
+    </android.support.design.widget.AppBarLayout>
 
-            <com.bobin.somemapapp.ui.custom.MapAppTextView
-                android:id="@+id/description_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lineSpacingMultiplier="1.3"
-                android:textColor="@color/black"
-                tools:text="Номер карты или договора, паспорт гражданина РФ. Сообщите кассиру, что хотите пополнить счет в Тинькофф Банке." />
-        </FrameLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/light_grey" />
-
-        <com.bobin.somemapapp.ui.custom.ExpandHeader
-            android:id="@+id/deposition_time_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:header_icon="@drawable/baseline_access_time_black_24"
-            app:title="@string/deposition_time" />
-
-        <FrameLayout
-            android:id="@+id/deposition_time_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:visibility="gone">
-
-            <com.bobin.somemapapp.ui.custom.MapAppTextView
-                android:id="@+id/deposition_time_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lineSpacingMultiplier="1.3"
-                android:textColor="@color/black"
-                tools:text="Моментально. В редких случаях — до 1 рабочего дня. Сохраняйте чек, пока деньги не поступят на счет." />
-        </FrameLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/light_grey" />
-
-        <com.bobin.somemapapp.ui.custom.ExpandHeader
-            android:id="@+id/deposition_point_type_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:header_icon="@drawable/baseline_place_black_24"
-            app:title="@string/deposition_point_type" />
-
-        <FrameLayout
-            android:id="@+id/deposition_point_type_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:visibility="gone">
-
-            <com.bobin.somemapapp.ui.custom.MapAppTextView
-                android:id="@+id/deposition_point_type_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lineSpacingMultiplier="1.3"
-                android:textColor="@color/black"
-                tools:text="Кассы в салонах" />
-        </FrameLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/light_grey" />
-
-        <com.bobin.somemapapp.ui.custom.ExpandHeader
-            android:id="@+id/restrictions_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:header_icon="@drawable/baseline_not_interested_black_24"
-            app:title="@string/restrictions" />
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollingCache="true">
 
         <LinearLayout
-            android:id="@+id/restrictions_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:visibility="gone">
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2">
-
-                <android.support.v7.widget.AppCompatSpinner
-                    android:id="@+id/selector"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <com.bobin.somemapapp.ui.custom.MapAppTextView
-                    android:id="@+id/money_restrictions"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:lineSpacingMultiplier="1.3"
-                    android:textColor="@color/black"
-                    tools:text="от 100 до 1000000" />
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/partner_icon"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="22dp" />
 
             <com.bobin.somemapapp.ui.custom.MapAppTextView
-                android:id="@+id/one_time_restrictions"
+                android:id="@+id/address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:lineSpacingMultiplier="1.3"
-                android:textColor="@color/black"
-                tools:text="За один раз:\n15 000 р. через терминал\n500 000 р. через кассу" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textAlignment="center"
+                android:textColor="@color/dark_grey"
+                tools:text="г Москва, пл Манежная, д 1 стр 2" />
 
+            <com.bobin.somemapapp.ui.custom.MapAppTextView
+                android:id="@+id/distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textAlignment="center"
+                android:textColor="@color/dark_grey"
+                tools:text="1200 метров" />
+
+            <com.bobin.somemapapp.ui.custom.ExpandHeader
+                android:id="@+id/description_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:header_icon="@drawable/baseline_description_black_24"
+                app:title="@string/description" />
+
+            <FrameLayout
+                android:id="@+id/description_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <com.bobin.somemapapp.ui.custom.MapAppTextView
+                    android:id="@+id/description_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingMultiplier="1.3"
+                    android:textColor="@color/black"
+                    tools:text="Номер карты или договора, паспорт гражданина РФ. Сообщите кассиру, что хотите пополнить счет в Тинькофф Банке." />
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/light_grey" />
+
+            <com.bobin.somemapapp.ui.custom.ExpandHeader
+                android:id="@+id/deposition_time_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:header_icon="@drawable/baseline_access_time_black_24"
+                app:title="@string/deposition_time" />
+
+            <FrameLayout
+                android:id="@+id/deposition_time_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <com.bobin.somemapapp.ui.custom.MapAppTextView
+                    android:id="@+id/deposition_time_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingMultiplier="1.3"
+                    android:textColor="@color/black"
+                    tools:text="Моментально. В редких случаях — до 1 рабочего дня. Сохраняйте чек, пока деньги не поступят на счет." />
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/light_grey" />
+
+            <com.bobin.somemapapp.ui.custom.ExpandHeader
+                android:id="@+id/deposition_point_type_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:header_icon="@drawable/baseline_place_black_24"
+                app:title="@string/deposition_point_type" />
+
+            <FrameLayout
+                android:id="@+id/deposition_point_type_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <com.bobin.somemapapp.ui.custom.MapAppTextView
+                    android:id="@+id/deposition_point_type_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingMultiplier="1.3"
+                    android:textColor="@color/black"
+                    tools:text="Кассы в салонах" />
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/light_grey" />
+
+            <com.bobin.somemapapp.ui.custom.ExpandHeader
+                android:id="@+id/restrictions_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:header_icon="@drawable/baseline_not_interested_black_24"
+                app:title="@string/restrictions" />
+
+            <LinearLayout
+                android:id="@+id/restrictions_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <android.support.v7.widget.AppCompatSpinner
+                        android:id="@+id/selector"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <com.bobin.somemapapp.ui.custom.MapAppTextView
+                        android:id="@+id/money_restrictions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:lineSpacingMultiplier="1.3"
+                        android:textColor="@color/black"
+                        tools:text="от 100 до 1000000" />
+                </LinearLayout>
+
+                <com.bobin.somemapapp.ui.custom.MapAppTextView
+                    android:id="@+id/one_time_restrictions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:lineSpacingMultiplier="1.3"
+                    android:textColor="@color/black"
+                    tools:text="За один раз:\n15 000 р. через терминал\n500 000 р. через кассу" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/light_grey" />
+
+            <com.bobin.somemapapp.ui.custom.MapAppTextView
+                android:id="@+id/go_to_web_site"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="48dp"
+                android:layout_marginTop="48dp"
+                android:text="@string/go_to_web_site" />
         </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/light_grey" />
 
-        <com.bobin.somemapapp.ui.custom.MapAppTextView
-            android:id="@+id/go_to_web_site"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="48dp"
-            android:layout_marginTop="48dp"
-            android:text="@string/go_to_web_site" />
-    </LinearLayout>
-</android.support.v4.widget.NestedScrollView>
+</LinearLayout>
 
 

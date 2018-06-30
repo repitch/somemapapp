@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -78,6 +80,8 @@ public class DepositionPointDetailActivity
     TextView address;
     @BindView(R.id.distance)
     TextView distance;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @InjectPresenter
     DepositionPointDetailPresenter presenter;
@@ -122,6 +126,9 @@ public class DepositionPointDetailActivity
         setContentView(R.layout.activity_deposition_point_detail);
         unbinder = ButterKnife.bind(this);
         restrictionsSelector.setOnItemSelectedListener(this);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        ViewUtils.changeAllTextViewsToCustomFont(toolbar);
         notifyPresenterStart(getIntent());
     }
 
@@ -197,6 +204,14 @@ public class DepositionPointDetailActivity
     public void showDistance(int meters) {
         distance.setVisibility(meters > 0 ? View.VISIBLE : View.GONE);
         distance.setText(GoogleMapUtils.distanceToString(this, meters));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home)
+            moveTaskToBack(true);
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
