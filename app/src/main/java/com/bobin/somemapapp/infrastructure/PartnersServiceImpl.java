@@ -1,7 +1,5 @@
 package com.bobin.somemapapp.infrastructure;
 
-import android.util.Log;
-
 import com.bobin.somemapapp.model.response.TinkoffApiResponse;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.network.api.TinkoffApi;
@@ -12,8 +10,6 @@ import com.bobin.somemapapp.utils.StorageUtils;
 import java.util.HashMap;
 import java.util.List;
 
-import io.reactivex.Completable;
-import io.reactivex.Scheduler;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 

@@ -1,7 +1,6 @@
 package com.bobin.somemapapp.model.tables;
 
 import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 public class PointsToCircle extends RealmObject {
     public PointsToCircle() {
