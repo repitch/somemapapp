@@ -20,10 +20,6 @@ public class DepositionPartner extends RealmObject {
     private String description;
     private RealmList<Limit> limits;
 
-    public String getFullPictureUrl() {
-        return "https://static.tinkoff.ru/icons/deposition-partners-v3/mdpi/" + getPicture();
-    }
-
     public String getId() {
         return id;
     }

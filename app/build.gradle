@@ -11,7 +11,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "API_ENDPOINT", '"https://api.tinkoff.ru/v1/"'
+        buildConfigField "String", "API_ENDPOINT", '"https://www-qa.tinkoff.ru/api/v1/"'
+        buildConfigField "String", "ICONS_ENDPOINT", '"https://static.tinkoff.ru/icons/deposition-partners-v3/"'
     }
     buildTypes {
         release {

@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bobin.somemapapp.model.MapCoordinates;
-import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.holder.DepositionPointViewHolder;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
@@ -74,11 +73,11 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
         private String icon;
         private String partnerName;
 
-        public BindData(DepositionPoint point, boolean watched, DepositionPartner partner) {
+        public BindData(DepositionPoint point, boolean watched, String partnerName, String icon) {
             this.point = point;
             this.watched = watched;
-            this.icon = partner.getFullPictureUrl();
-            this.partnerName = partner.getName();
+            this.icon = icon;
+            this.partnerName = partnerName;
         }
 
         public DepositionPoint getPoint() {

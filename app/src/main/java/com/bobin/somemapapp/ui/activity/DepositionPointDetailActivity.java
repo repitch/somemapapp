@@ -216,7 +216,7 @@ public class DepositionPointDetailActivity
     }
 
     @Override
-    public void showPartner(DepositionPartner partner) {
+    public void showPartner(DepositionPartner partner, String icon) {
         setTitle(partner.getName());
         description.setText(ViewUtils.toHtml(partner.getDescription()));
         depositionTime.setText(ViewUtils.toHtml(partner.getDepositionDuration()));
@@ -238,7 +238,7 @@ public class DepositionPointDetailActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             startPostponedEnterTransition();
 
-        ViewUtils.glideRoundImage(partnerIcon, partner.getFullPictureUrl());
+        ViewUtils.glideRoundImage(partnerIcon, icon);
     }
 
     @Override

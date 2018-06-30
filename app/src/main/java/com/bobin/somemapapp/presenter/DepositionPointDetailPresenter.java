@@ -8,8 +8,10 @@ import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.infrastructure.PartnersService;
 import com.bobin.somemapapp.infrastructure.PointWatchedService;
 import com.bobin.somemapapp.model.MapCoordinates;
+import com.bobin.somemapapp.model.ScreenDensityUrlCalculator;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.Limit;
+import com.bobin.somemapapp.network.NetworkAvailability;
 import com.bobin.somemapapp.ui.view.DepositionPointDetailView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 
@@ -20,17 +22,20 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+@SuppressWarnings("WeakerAccess")
 @InjectViewState
 public class DepositionPointDetailPresenter extends MvpPresenter<DepositionPointDetailView> {
     private CompositeDisposable compositeDisposable;
     private DepositionPartner partner;
 
-    @SuppressWarnings("WeakerAccess")
     @Inject
     PartnersService partnersService;
-    @SuppressWarnings("WeakerAccess")
     @Inject
     PointWatchedService watchedService;
+    @Inject
+    NetworkAvailability networkAvailability;
+    @Inject
+    ScreenDensityUrlCalculator urlCalculator;
 
     public DepositionPointDetailPresenter() {
         compositeDisposable = new CompositeDisposable();
@@ -53,7 +58,7 @@ public class DepositionPointDetailPresenter extends MvpPresenter<DepositionPoint
                 .subscribe(
                         partner -> {
                             this.partner = partner;
-                            getViewState().showPartner(partner);
+                            getViewState().showPartner(partner, urlCalculator.getPartnerPictureUrl(partner));
                         },
                         t -> getViewState().finishActivity());
         compositeDisposable.add(subscribe);

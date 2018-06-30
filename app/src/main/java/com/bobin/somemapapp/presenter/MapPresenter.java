@@ -11,8 +11,10 @@ import com.bobin.somemapapp.infrastructure.DepositionPointsService;
 import com.bobin.somemapapp.infrastructure.PartnersService;
 import com.bobin.somemapapp.model.CameraBounds;
 import com.bobin.somemapapp.model.MapCoordinates;
+import com.bobin.somemapapp.model.ScreenDensityUrlCalculator;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
+import com.bobin.somemapapp.network.NetworkAvailability;
 import com.bobin.somemapapp.storage.KeyValueStorage;
 import com.bobin.somemapapp.ui.view.MapView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
@@ -30,6 +32,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
+@SuppressWarnings("WeakerAccess")
 @InjectViewState
 public class MapPresenter extends MvpPresenter<MapView> {
     private static final String LAST_SCREEN_POSITION_KEY = "lastScreenPosition";
@@ -38,15 +41,16 @@ public class MapPresenter extends MvpPresenter<MapView> {
     private PublishSubject<CameraBounds> cameraBoundsPublishSubject;
     private BoundsWithPoints currentScreenData;
 
-    @SuppressWarnings("WeakerAccess")
     @Inject
     DepositionPointsService depositionPointsService;
-    @SuppressWarnings("WeakerAccess")
     @Inject
     PartnersService partnersService;
-    @SuppressWarnings("WeakerAccess")
     @Inject
     KeyValueStorage keyValueStorage;
+    @Inject
+    NetworkAvailability networkAvailability;
+    @Inject
+    ScreenDensityUrlCalculator urlCalculator;
 
     public MapPresenter() {
         compositeDisposable = new CompositeDisposable();
@@ -136,7 +140,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
             Disposable subscribe = partnersService.getPartnerById(point.getPartnerName())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(partner -> getViewState().showBottomSheet(point, partner.getName(), partner.getFullPictureUrl()));
+                    .subscribe(partner -> getViewState().showBottomSheet(point, partner.getName(), urlCalculator.getPartnerPictureUrl(partner)));
             compositeDisposable.add(subscribe);
         }
     }

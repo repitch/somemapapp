@@ -6,8 +6,10 @@ import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.infrastructure.PartnersService;
 import com.bobin.somemapapp.infrastructure.PointWatchedService;
 import com.bobin.somemapapp.model.MapCoordinates;
+import com.bobin.somemapapp.model.ScreenDensityUrlCalculator;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
+import com.bobin.somemapapp.network.NetworkAvailability;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsListAdapter;
 import com.bobin.somemapapp.ui.view.DepositionPointsListView;
 import com.bobin.somemapapp.utils.CollectionUtils;
@@ -27,14 +29,17 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+@SuppressWarnings("WeakerAccess")
 @InjectViewState
 public class DepositionPointsListPresenter extends MvpPresenter<DepositionPointsListView> {
-    @SuppressWarnings("WeakerAccess")
     @Inject
     PartnersService partnersService;
-    @SuppressWarnings("WeakerAccess")
     @Inject
     PointWatchedService watchedService;
+    @Inject
+    NetworkAvailability networkAvailability;
+    @Inject
+    ScreenDensityUrlCalculator urlCalculator;
 
     private CompositeDisposable compositeDisposable;
     private List<DepositionPointsListAdapter.BindData> currentData;
@@ -90,7 +95,10 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
             boolean watched = watchedSet.contains(point.getExternalId());
             DepositionPartner partner = partners.get(point.getPartnerName());
             DepositionPointsListAdapter.BindData bindData =
-                    new DepositionPointsListAdapter.BindData(point, watched, partner);
+                    new DepositionPointsListAdapter.BindData(point,
+                            watched,
+                            partner.getName(),
+                            urlCalculator.getPartnerPictureUrl(partner));
             result.add(bindData);
         }
         return result;
