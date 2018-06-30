@@ -12,14 +12,11 @@ import com.bobin.somemapapp.ui.adapter.DepositionPointsListAdapter;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 import com.bobin.somemapapp.utils.ViewUtils;
 
-import org.w3c.dom.Text;
-
 import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-@SuppressWarnings("ALL")
 public class DepositionPointViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     @BindView(R.id.partner_name)
     TextView partnerName;
@@ -29,6 +26,9 @@ public class DepositionPointViewHolder extends RecyclerView.ViewHolder implement
     ImageView pointIcon;
     @BindView(R.id.distance)
     TextView distance;
+    @BindView(R.id.watched)
+    View eye;
+
     private DepositionPoint point;
     private int position;
     private DepositionPointsListAdapter.PointClickListener clickListener;
@@ -47,13 +47,14 @@ public class DepositionPointViewHolder extends RecyclerView.ViewHolder implement
 
     public static int layoutId = R.layout.item_deposition_point;
 
-    public void bind(DepositionPoint point, String icon, int position, int meters) {
+    public void bind(DepositionPoint point, String icon, int position, int meters, boolean watched) {
         this.point = point;
         this.position = position;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             pointIcon.setTransitionName(point.getPartnerName() + UUID.randomUUID());
 
+        eye.setVisibility(watched ? View.VISIBLE : View.GONE);
         partnerName.setText(point.getPartnerName());
         fullAddress.setText(point.getFullAddress());
         distance.setVisibility(meters != -1 ? View.VISIBLE : View.GONE);
@@ -61,13 +62,9 @@ public class DepositionPointViewHolder extends RecyclerView.ViewHolder implement
         ViewUtils.glideRoundImage(pointIcon, icon);
     }
 
-    public int getItemPosition() {
-        return position;
-    }
-
     @Override
     public void onClick(View v) {
         if (clickListener != null)
-            clickListener.onClickPoint(point, pointIcon);
+            clickListener.onClickPoint(point, pointIcon, position);
     }
 }

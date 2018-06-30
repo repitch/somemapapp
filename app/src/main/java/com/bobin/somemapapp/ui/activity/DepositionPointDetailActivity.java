@@ -1,9 +1,7 @@
 package com.bobin.somemapapp.ui.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -28,8 +26,6 @@ import com.bobin.somemapapp.ui.custom.ExpandHeader;
 import com.bobin.somemapapp.ui.view.DepositionPointDetailView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 import com.bobin.somemapapp.utils.ViewUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +48,7 @@ public class DepositionPointDetailActivity
     private static final String POINT_LONGITUDE_KEY = "pLongitude";
     private static final String POINT_ADDRESS_KEY = "pAddress";
     private static final String TRANSITION_NAME_KEY = "transitionName";
+    private static final String POINT_ID_KEY = "pointId";
 
     @BindView(R.id.description_content)
     FrameLayout descriptionContent;
@@ -98,6 +95,7 @@ public class DepositionPointDetailActivity
         }
 
         Intent intent = new Intent(activity, DepositionPointDetailActivity.class)
+                .putExtra(POINT_ID_KEY, point.getExternalId())
                 .putExtra(PARTNER_ID_KEY, point.getPartnerName())
                 .putExtra(POINT_LATITUDE_KEY, point.getLatitude())
                 .putExtra(POINT_LONGITUDE_KEY, point.getLongitude())
@@ -129,6 +127,7 @@ public class DepositionPointDetailActivity
 
     private void notifyPresenterStart(Intent intent) {
         String partnerId = intent.getStringExtra(PARTNER_ID_KEY);
+        String pointId = intent.getStringExtra(POINT_ID_KEY);
         String pointAddress = intent.getStringExtra(POINT_ADDRESS_KEY);
         MapCoordinates pointLocation = new MapCoordinates(
                 intent.getDoubleExtra(POINT_LATITUDE_KEY, 0),
@@ -147,6 +146,7 @@ public class DepositionPointDetailActivity
         address.setText(pointAddress);
 
         presenter.onStart(partnerId, pointLocation, userPosition);
+        presenter.setPointWatched(pointId);
     }
 
     @OnClick(R.id.go_to_web_site)

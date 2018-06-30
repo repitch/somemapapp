@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bobin.somemapapp.R;
+import com.bobin.somemapapp.infrastructure.PointWatchedService;
+import com.bobin.somemapapp.infrastructure.PointWatchedServiceImpl;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.utils.ViewUtils;
 import com.bumptech.glide.Glide;
@@ -32,14 +34,19 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
     TextView hours;
     @BindView(R.id.hours_label)
     TextView hoursLabel;
+    @BindView(R.id.watched)
+    View eye;
+
     private ClickListener clickListener;
     private DepositionPoint currentPoint;
     private String pointName;
     private String pointIcon;
+    private PointWatchedService watchedService;
 
     private static final String NAME_KEY = "name";
     private static final String ICON_KEY = "icon";
     private static final String POINT_KEY = "point";
+    private boolean onStartWatched;
 
     @Nullable
     @Override
@@ -52,6 +59,7 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
     private void onClick(View view) {
         if (clickListener != null)
             clickListener.onSheetClick(currentPoint, icon);
+
     }
 
     public PointDetailBottomSheet setClickListener(ClickListener clickListener) {
@@ -79,9 +87,11 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
         currentPoint = (DepositionPoint) arguments.getSerializable(POINT_KEY);
         pointName = arguments.getString(NAME_KEY);
         pointIcon = arguments.getString(ICON_KEY);
-
+        watchedService = new PointWatchedServiceImpl();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             setExitTransition(new Fade());
+        onStartWatched = watchedService.isWatched(currentPoint.getExternalId());
+
     }
 
     @Override
@@ -90,12 +100,20 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
         ButterKnife.bind(this, view);
         view.setOnClickListener(this::onClick);
         initData();
+        eye.setVisibility(onStartWatched ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         ((View) getView().getParent()).setBackgroundColor(getContext().getResources().getColor(android.R.color.transparent));
+        boolean watched = watchedService.isWatched(currentPoint.getExternalId());
+        int visibilityFlag = watched ? View.VISIBLE : View.INVISIBLE;
+        if (watched != onStartWatched) {
+            eye.setAlpha(0);
+            eye.setVisibility(visibilityFlag);
+            eye.animate().setDuration(200).alpha(0.6f);
+        }
     }
 
     private void initData() {

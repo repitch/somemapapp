@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bobin.somemapapp.infrastructure.PointWatchedService;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.holder.DepositionPointViewHolder;
@@ -20,6 +21,11 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
     private HashMap<String, String> icons;
     private MapCoordinates userLocation;
     private PointClickListener clickListener;
+    private PointWatchedService watchedService;
+
+    public DepositionPointsListAdapter(PointWatchedService watchedService) {
+        this.watchedService = watchedService;
+    }
 
     @NonNull
     @Override
@@ -43,7 +49,7 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
         int meters = -1;
         if (userLocation != null)
             meters = (int) GoogleMapUtils.distanceBetween(userLocation, point.getMapCoordinates());
-        holder.bind(point, icons.get(point.getPartnerName()), position, meters);
+        holder.bind(point, icons.get(point.getPartnerName()), position, meters, watchedService.isWatched(point.getExternalId()));
     }
 
     @Override
@@ -63,6 +69,6 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
     }
 
     public interface PointClickListener {
-        void onClickPoint(DepositionPoint point, View iconView);
+        void onClickPoint(DepositionPoint point, View iconView, int position);
     }
 }

@@ -7,6 +7,8 @@ import com.arellomobile.mvp.MvpPresenter;
 import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.infrastructure.PartnersService;
 import com.bobin.somemapapp.infrastructure.PartnersServiceImpl;
+import com.bobin.somemapapp.infrastructure.PointWatchedService;
+import com.bobin.somemapapp.infrastructure.PointWatchedServiceImpl;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.Limit;
@@ -26,10 +28,12 @@ public class DepositionPointDetailPresenter extends MvpPresenter<DepositionPoint
     private PartnersService partnersService;
     private CompositeDisposable compositeDisposable;
     private DepositionPartner partner;
+    private PointWatchedService watchedService;
 
     public DepositionPointDetailPresenter() {
         partnersService = new PartnersServiceImpl(new TinkoffApiFactory().createApi(), new PartnersCacheImpl(new KeyValueStorageImpl(MapApp.context)));
         compositeDisposable = new CompositeDisposable();
+        watchedService = new PointWatchedServiceImpl();
     }
 
     public Limit getLimit(int id) {
@@ -65,5 +69,9 @@ public class DepositionPointDetailPresenter extends MvpPresenter<DepositionPoint
             String url = partner.getUrl();
             getViewState().openBrowser(Uri.parse(url));
         }
+    }
+
+    public void setPointWatched(String pointId) {
+        watchedService.setWatched(pointId);
     }
 }

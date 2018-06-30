@@ -19,7 +19,8 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <LinearLayout
+            <RelativeLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -28,18 +29,33 @@
                     android:id="@+id/point_icon"
                     android:layout_width="54dp"
                     android:layout_height="54dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="16dp"
                     android:transitionName="partner_icon" />
 
                 <com.bobin.somemapapp.ui.custom.MapAppTextView
                     android:id="@+id/name"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_toRightOf="@+id/point_icon"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     tools:text="EUROSET" />
-            </LinearLayout>
+
+                <ImageView
+                    android:visibility="gone"
+                    android:id="@+id/watched"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_below="@+id/name"
+                    android:alpha="0.6"
+                    android:src="@drawable/baseline_remove_red_eye_black_18" />
+            </RelativeLayout>
 
             <com.bobin.somemapapp.ui.custom.MapAppTextView
                 android:id="@+id/address_label"

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.transition.Fade;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +15,8 @@ import android.view.ViewGroup;
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
 import com.bobin.somemapapp.R;
+import com.bobin.somemapapp.infrastructure.PointWatchedService;
+import com.bobin.somemapapp.infrastructure.PointWatchedServiceImpl;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.presenter.DepositionPointsListPresenter;
@@ -39,11 +42,14 @@ public class DepositionPointsListFragment
     private Unbinder unbinder;
     private DepositionPointsListAdapter adapter;
     private MapCoordinates userLocation;
+    private Integer updateItemIdAfterResume;
+    private PointWatchedService watchedService;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adapter = new DepositionPointsListAdapter();
+        watchedService = new PointWatchedServiceImpl();
+        adapter = new DepositionPointsListAdapter(watchedService);
         adapter.setClickListener(this);
     }
 
@@ -85,7 +91,17 @@ public class DepositionPointsListFragment
     }
 
     @Override
-    public void onClickPoint(DepositionPoint point, View iconView) {
+    public void onClickPoint(DepositionPoint point, View iconView, int position) {
+        updateItemIdAfterResume = position;
         DepositionPointDetailActivity.start(getActivity(), point, userLocation, iconView);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (updateItemIdAfterResume != null) {
+            adapter.notifyItemChanged(updateItemIdAfterResume);
+            updateItemIdAfterResume = null;
+        }
     }
 }
