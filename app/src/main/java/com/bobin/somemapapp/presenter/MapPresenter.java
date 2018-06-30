@@ -36,7 +36,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
 
     private CompositeDisposable compositeDisposable;
     private PublishSubject<CameraBounds> cameraBoundsPublishSubject;
-    private CircleWithPoints currentScreenData;
+    private BoundsWithPoints currentScreenData;
 
     @SuppressWarnings("WeakerAccess")
     @Inject
@@ -81,12 +81,15 @@ public class MapPresenter extends MvpPresenter<MapView> {
         super.onFirstViewAttach();
         Disposable subscribe = cameraBoundsPublishSubject
                 .debounce(1L, TimeUnit.SECONDS)
-                .filter(this::needLoadPoints)
-                .flatMap(x -> getDepositionPoints(x).observeOn(Schedulers.io()))
+                .flatMap(x -> {
+                    if (needLoadPoints(x))
+                        return getDepositionPoints(x).observeOn(Schedulers.io());
+                    currentScreenData.cameraBounds = x;
+                    return Observable.just(currentScreenData);
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                //.onErrorResumeNext(Observable.empty())
                 .subscribe(x -> {
-                    getViewState().showPins(x.points);
+                    getViewState().showPins(x.pointsFromBounds());
                     currentScreenData = x;
                 });
         compositeDisposable.add(subscribe);
@@ -98,12 +101,10 @@ public class MapPresenter extends MvpPresenter<MapView> {
             return true;
         }
 
-        PointsCircle circle = GoogleMapUtils.toCircle(bounds);
-
         List<DepositionPoint> pointsFromCircle =
-                GoogleMapUtils.pointsFromCircle(circle, currentScreenData.points);
+                GoogleMapUtils.pointsFromCameraBounds(bounds, currentScreenData.points);
 
-        if (!currentScreenData.circle.contains(circle)) {
+        if (!GoogleMapUtils.boundsInCircle(currentScreenData.getCircle(), bounds)) {
             Log.d("MapPresenter", "!currentScreenData.circle.contains(circle)");
             return true;
         }
@@ -115,11 +116,11 @@ public class MapPresenter extends MvpPresenter<MapView> {
         return false;
     }
 
-    private Observable<CircleWithPoints> getDepositionPoints(CameraBounds bounds) {
+    private Observable<BoundsWithPoints> getDepositionPoints(CameraBounds bounds) {
         final PointsCircle pointsCircle = GoogleMapUtils.toCircle(bounds);
 
         return depositionPointsService.getPoints(pointsCircle)
-                .map(x -> new CircleWithPoints(pointsCircle, x))
+                .map(x -> new BoundsWithPoints(x, bounds))
                 .toObservable();
     }
 
@@ -157,13 +158,22 @@ public class MapPresenter extends MvpPresenter<MapView> {
         return null;
     }
 
-    private static class CircleWithPoints {
-        PointsCircle circle;
+    private static class BoundsWithPoints {
+        CameraBounds cameraBounds;
         List<DepositionPoint> points;
 
-        CircleWithPoints(PointsCircle circle, List<DepositionPoint> points) {
-            this.circle = circle;
+        BoundsWithPoints(List<DepositionPoint> points,
+                         CameraBounds cameraBounds) {
             this.points = points;
+            this.cameraBounds = cameraBounds;
+        }
+
+        PointsCircle getCircle() {
+            return GoogleMapUtils.toCircle(cameraBounds);
+        }
+
+        List<DepositionPoint> pointsFromBounds() {
+            return GoogleMapUtils.pointsFromCameraBounds(cameraBounds, points);
         }
     }
 }

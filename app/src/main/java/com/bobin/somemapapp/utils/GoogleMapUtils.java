@@ -62,19 +62,43 @@ public final class GoogleMapUtils {
         return result;
     }
 
+    private static boolean pointInsideCircle(PointsCircle circle, MapCoordinates point) {
+        return distanceBetween(circle.getCenterMapCoordinates(), point) < circle.getRadius();
+    }
+
     private static boolean pointInsideCircle(PointsCircle circle, DepositionPoint point) {
-        return distanceBetween(circle.getCenterMapCoordinates(), point.getMapCoordinates()) < circle.getRadius();
+        return pointInsideCircle(circle, point.getMapCoordinates());
+    }
+
+    public static List<DepositionPoint> pointsFromCameraBounds(CameraBounds bounds,
+                                                               List<DepositionPoint> points) {
+        MapCoordinates leftTop = bounds.getLeftTop();
+        MapCoordinates rightBottom = bounds.getRightBottom();
+
+        List<DepositionPoint> result = new ArrayList<>();
+        for (DepositionPoint point : points) {
+            if (point.getLatitude() >= rightBottom.getLatitude()
+                    && point.getLatitude() <= leftTop.getLatitude()
+                    && point.getLongitude() >= leftTop.getLongitude()
+                    && point.getLongitude() <= rightBottom.getLongitude()) {
+                result.add(point);
+            }
+        }
+        return result;
+    }
+
+    public static boolean boundsInCircle(PointsCircle circle, CameraBounds bounds) {
+        return pointInsideCircle(circle, bounds.getLeftTop()) &&
+                pointInsideCircle(circle, bounds.getRightBottom());
     }
 
     public static PointsCircle toCircle(CameraBounds bounds) {
-        float r1 = GoogleMapUtils.distanceBetween(bounds.getLeftTop(), bounds.getCenter());
-        float r2 = GoogleMapUtils.distanceBetween(bounds.getRightBottom(), bounds.getCenter());
-        int radius = (int) Math.max(r1, r2);
+        float radius = GoogleMapUtils.distanceBetween(bounds.getLeftTop(), bounds.getCenter());
 
         return new PointsCircle(
                 bounds.getCenter().getLatitude(),
                 bounds.getCenter().getLongitude(),
-                radius);
+                (int) radius);
     }
 
     public static String distanceToString(Context context, int meters) {

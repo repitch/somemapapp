@@ -125,6 +125,7 @@ public class MapFragment
                     pin.getLongitude(),
                     pin.getPartnerName()));
         }
+
         clusterManager.addItems(items);
         clusterManager.cluster();
         if (depositionPointsChangedListener != null)

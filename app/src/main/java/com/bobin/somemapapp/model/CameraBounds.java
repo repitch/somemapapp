@@ -22,4 +22,12 @@ public class CameraBounds {
     public MapCoordinates getCenter() {
         return center;
     }
+
+    public MapCoordinates getLeftBottom() {
+        return new MapCoordinates(rightBottom.getLatitude(), leftTop.getLongitude());
+    }
+
+    public MapCoordinates getRightTop() {
+        return new MapCoordinates(leftTop.getLatitude(), rightBottom.getLongitude());
+    }
 }
