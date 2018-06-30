@@ -1,14 +1,21 @@
 package com.bobin.somemapapp.infrastructure;
 
+import android.util.Log;
+
 import com.bobin.somemapapp.model.response.TinkoffApiResponse;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.network.api.TinkoffApi;
 import com.bobin.somemapapp.storage.PartnersCache;
+import com.bobin.somemapapp.utils.CollectionUtils;
 import com.bobin.somemapapp.utils.StorageUtils;
 
+import java.util.HashMap;
 import java.util.List;
 
+import io.reactivex.Completable;
+import io.reactivex.Scheduler;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 public class PartnersServiceImpl implements PartnersService {
     private TinkoffApi tinkoffApi;
@@ -21,34 +28,28 @@ public class PartnersServiceImpl implements PartnersService {
 
     @Override
     public Single<DepositionPartner> getPartnerById(String id) {
-        DepositionPartner partner = partnersCache.getPartnerByIdOrNull(id);
-        if (partner != null)
-            return Single.just(partner);
-
-        return cachePartners().map(x -> partnersCache.getPartnerByIdOrNull(id));
+        return cachePartnersIfNeed()
+                .map(f -> partnersCache.getPartnerByIdOrNull(id));
     }
 
     @Override
-    public Single<List<DepositionPartner>> getPartnersByIds(List<String> ids) {
-        String[] idsArray = new String[ids.size()];
-        for (int i = 0; i < ids.size(); ++i)
-            idsArray[i] = ids.get(i);
-
-        if (partnersCache.isExpired())
-            return cachePartners().map(x -> partnersCache.getPartnersByIdsOrNull(idsArray));
-
-        return Single.just(partnersCache.getPartnersByIdsOrNull(idsArray));
+    public Single<HashMap<String, DepositionPartner>> getPartnersByIds(List<String> ids) {
+        String[] idsArray = CollectionUtils.toArray(ids);
+        return cachePartnersIfNeed()
+                .map(f -> partnersCache.getPartnersByIdsOrNull(idsArray));
     }
 
-    private Single<Boolean> cachePartners() {
+    private Single<Boolean> cachePartnersIfNeed() {
+        if (!partnersCache.isExpired())
+            return Single.just(true);
+
         return tinkoffApi.getDepositionPartners("Credit")
+                .subscribeOn(Schedulers.io())
                 .toObservable()
                 .flatMapIterable(TinkoffApiResponse::getPayload)
                 .map(StorageUtils::convert)
                 .toList()
-                .map(x -> {
-                    partnersCache.savePartners(x);
-                    return true;
-                });
+                .doOnSuccess(x -> partnersCache.savePartners(x))
+                .map(x -> true);
     }
 }

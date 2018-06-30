@@ -1,20 +1,22 @@
 package com.bobin.somemapapp;
 
 import android.app.Application;
-import android.content.Context;
+
+import com.bobin.somemapapp.di.component.ApplicationComponent;
+import com.bobin.somemapapp.di.component.DaggerApplicationComponent;
+import com.bobin.somemapapp.di.module.ApplicationModule;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 public class MapApp extends Application {
-    public static Context context;
+    private static ApplicationComponent applicationComponent;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
         initRealm();
-        context = getApplicationContext();
+        initComponent();
     }
 
     private void initRealm() {
@@ -23,5 +25,15 @@ public class MapApp extends Application {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
+    }
+
+    private void initComponent() {
+        applicationComponent = DaggerApplicationComponent.builder()
+                .applicationModule(new ApplicationModule(this))
+                .build();
+    }
+
+    public static ApplicationComponent getComponent() {
+        return applicationComponent;
     }
 }

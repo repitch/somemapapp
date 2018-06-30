@@ -76,4 +76,11 @@ public class PointsCircle extends RealmObject {
         float distance = GoogleMapUtils.distanceBetween(circle, this);
         return circle.getRadius() + distance < getRadius();
     }
+
+    public boolean isTheSame(PointsCircle circle) {
+        return this.getCenterLatitude() == circle.getCenterLatitude() &&
+                this.getCenterLongitude() == circle.getCenterLongitude() &&
+                this.getRadius() == circle.getRadius();
+    }
+
 }

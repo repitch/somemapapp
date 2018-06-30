@@ -47,19 +47,19 @@ public class DepositionPointViewHolder extends RecyclerView.ViewHolder implement
 
     public static int layoutId = R.layout.item_deposition_point;
 
-    public void bind(DepositionPoint point, String icon, int position, int meters, boolean watched) {
-        this.point = point;
+    public void bind(DepositionPointsListAdapter.BindData data, int position, int meters) {
+        this.point = data.getPoint();
         this.position = position;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             pointIcon.setTransitionName(point.getPartnerName() + UUID.randomUUID());
 
-        eye.setVisibility(watched ? View.VISIBLE : View.GONE);
-        partnerName.setText(point.getPartnerName());
+        eye.setVisibility(data.isWatched() ? View.VISIBLE : View.GONE);
+        partnerName.setText(data.getPartnerName());
         fullAddress.setText(point.getFullAddress());
         distance.setVisibility(meters != -1 ? View.VISIBLE : View.GONE);
         distance.setText(GoogleMapUtils.distanceToString(distance.getContext(), meters));
-        ViewUtils.glideRoundImage(pointIcon, icon);
+        ViewUtils.glideRoundImage(pointIcon, data.getIcon());
     }
 
     @Override

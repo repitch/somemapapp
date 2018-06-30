@@ -9,12 +9,14 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TinkoffApiFactory {
+    private TinkoffApiFactory() {
+    }
 
-    public TinkoffApi createApi() {
+    public static TinkoffApi createApi() {
         return buildRetrofit().create(TinkoffApi.class);
     }
 
-    private Retrofit buildRetrofit() {
+    private static Retrofit buildRetrofit() {
         return new Retrofit.Builder()
                 .baseUrl(BuildConfig.API_ENDPOINT)
                 .client(createHttpClient())
@@ -23,7 +25,7 @@ public class TinkoffApiFactory {
                 .build();
     }
 
-    private OkHttpClient createHttpClient() {
+    private static OkHttpClient createHttpClient() {
         return new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor()
                         .setLevel(HttpLoggingInterceptor.Level.BASIC))

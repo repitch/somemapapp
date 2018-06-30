@@ -6,17 +6,14 @@ import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.infrastructure.PartnersService;
-import com.bobin.somemapapp.infrastructure.PartnersServiceImpl;
 import com.bobin.somemapapp.infrastructure.PointWatchedService;
-import com.bobin.somemapapp.infrastructure.PointWatchedServiceImpl;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.Limit;
-import com.bobin.somemapapp.network.api.TinkoffApiFactory;
-import com.bobin.somemapapp.storage.KeyValueStorageImpl;
-import com.bobin.somemapapp.storage.PartnersCacheImpl;
 import com.bobin.somemapapp.ui.view.DepositionPointDetailView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -25,15 +22,19 @@ import io.reactivex.schedulers.Schedulers;
 
 @InjectViewState
 public class DepositionPointDetailPresenter extends MvpPresenter<DepositionPointDetailView> {
-    private PartnersService partnersService;
     private CompositeDisposable compositeDisposable;
     private DepositionPartner partner;
-    private PointWatchedService watchedService;
+
+    @SuppressWarnings("WeakerAccess")
+    @Inject
+    PartnersService partnersService;
+    @SuppressWarnings("WeakerAccess")
+    @Inject
+    PointWatchedService watchedService;
 
     public DepositionPointDetailPresenter() {
-        partnersService = new PartnersServiceImpl(new TinkoffApiFactory().createApi(), new PartnersCacheImpl(new KeyValueStorageImpl(MapApp.context)));
         compositeDisposable = new CompositeDisposable();
-        watchedService = new PointWatchedServiceImpl();
+        MapApp.getComponent().inject(this);
     }
 
     public Limit getLimit(int id) {

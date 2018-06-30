@@ -8,17 +8,10 @@ import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.infrastructure.DepositionPointsService;
-import com.bobin.somemapapp.infrastructure.DepositionPointsServiceImpl;
 import com.bobin.somemapapp.infrastructure.PartnersService;
-import com.bobin.somemapapp.infrastructure.PartnersServiceImpl;
 import com.bobin.somemapapp.model.CameraBounds;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
-import com.bobin.somemapapp.network.api.TinkoffApi;
-import com.bobin.somemapapp.network.api.TinkoffApiFactory;
-import com.bobin.somemapapp.storage.KeyValueStorageImpl;
-import com.bobin.somemapapp.storage.PartnersCacheImpl;
-import com.bobin.somemapapp.storage.PointsCacheImpl;
 import com.bobin.somemapapp.ui.view.MapView;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -26,8 +19,9 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -38,16 +32,19 @@ import io.reactivex.subjects.PublishSubject;
 public class MapPresenter extends MvpPresenter<MapView> {
     private CompositeDisposable compositeDisposable;
     private PublishSubject<CameraBounds> cameraBoundsPublishSubject;
-    private DepositionPointsService depositionPointsService;
     private CircleWithPoints currentScreenData;
-    private PartnersService partnersService;
+
+    @SuppressWarnings("WeakerAccess")
+    @Inject
+    DepositionPointsService depositionPointsService;
+    @SuppressWarnings("WeakerAccess")
+    @Inject
+    PartnersService partnersService;
 
     public MapPresenter() {
-        TinkoffApi api = new TinkoffApiFactory().createApi();
-        partnersService = new PartnersServiceImpl(api, new PartnersCacheImpl(new KeyValueStorageImpl(MapApp.context)));
         compositeDisposable = new CompositeDisposable();
         cameraBoundsPublishSubject = PublishSubject.create();
-        depositionPointsService = new DepositionPointsServiceImpl(api, new PointsCacheImpl());
+        MapApp.getComponent().inject(this);
     }
 
     public void mapIsReady(FragmentActivity activity) {
@@ -68,7 +65,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 .filter(this::needLoadPoints)
                 .flatMap(x -> getDepositionPoints(x).observeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorResumeNext(Observable.empty())
+                //.onErrorResumeNext(Observable.empty())
                 .subscribe(x -> {
                     getViewState().showPins(x.points);
                     currentScreenData = x;
@@ -76,7 +73,6 @@ public class MapPresenter extends MvpPresenter<MapView> {
         compositeDisposable.add(subscribe);
     }
 
-    // удалять штуки, которые вне экрана - из-за них лагает
     private boolean needLoadPoints(CameraBounds bounds) {
         if (currentScreenData == null) {
             Log.d("MapPresenter", "currentScreenData == null");
@@ -123,7 +119,6 @@ public class MapPresenter extends MvpPresenter<MapView> {
                     .subscribe(partner -> getViewState().showBottomSheet(point, partner.getName(), partner.getFullPictureUrl()));
             compositeDisposable.add(subscribe);
         }
-
     }
 
     public void mapCameraStops(CameraBounds bounds) {

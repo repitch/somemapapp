@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.infrastructure.PointWatchedService;
 import com.bobin.somemapapp.infrastructure.PointWatchedServiceImpl;
@@ -19,6 +20,8 @@ import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.utils.ViewUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,7 +44,8 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
     private DepositionPoint currentPoint;
     private String pointName;
     private String pointIcon;
-    private PointWatchedService watchedService;
+    @Inject
+    PointWatchedService watchedService;
 
     private static final String NAME_KEY = "name";
     private static final String ICON_KEY = "icon";
@@ -87,7 +91,7 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
         currentPoint = (DepositionPoint) arguments.getSerializable(POINT_KEY);
         pointName = arguments.getString(NAME_KEY);
         pointIcon = arguments.getString(ICON_KEY);
-        watchedService = new PointWatchedServiceImpl();
+        MapApp.getComponent().inject(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             setExitTransition(new Fade());
         onStartWatched = watchedService.isWatched(currentPoint.getExternalId());

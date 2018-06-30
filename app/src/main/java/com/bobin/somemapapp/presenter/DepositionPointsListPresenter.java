@@ -1,23 +1,29 @@
 package com.bobin.somemapapp.presenter;
 
+import android.util.Pair;
+
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.infrastructure.PartnersService;
-import com.bobin.somemapapp.infrastructure.PartnersServiceImpl;
+import com.bobin.somemapapp.infrastructure.PointWatchedService;
 import com.bobin.somemapapp.model.MapCoordinates;
+import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
-import com.bobin.somemapapp.network.api.TinkoffApiFactory;
-import com.bobin.somemapapp.storage.KeyValueStorageImpl;
-import com.bobin.somemapapp.storage.PartnersCacheImpl;
+import com.bobin.somemapapp.ui.adapter.DepositionPointsListAdapter;
 import com.bobin.somemapapp.ui.view.DepositionPointsListView;
+import com.bobin.somemapapp.utils.CollectionUtils;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.Callable;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -25,12 +31,19 @@ import io.reactivex.schedulers.Schedulers;
 
 @InjectViewState
 public class DepositionPointsListPresenter extends MvpPresenter<DepositionPointsListView> {
-    private PartnersService partnersService;
+    @SuppressWarnings("WeakerAccess")
+    @Inject
+    PartnersService partnersService;
+    @SuppressWarnings("WeakerAccess")
+    @Inject
+    PointWatchedService watchedService;
+
     private CompositeDisposable compositeDisposable;
+    private List<DepositionPointsListAdapter.BindData> currentData;
 
     public DepositionPointsListPresenter() {
-        partnersService = new PartnersServiceImpl(new TinkoffApiFactory().createApi(), new PartnersCacheImpl(new KeyValueStorageImpl(MapApp.context)));
         compositeDisposable = new CompositeDisposable();
+        MapApp.getComponent().inject(this);
     }
 
     public void updateList(List<DepositionPoint> points, MapCoordinates userLocation) {
@@ -50,23 +63,51 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
             sortedPoints = points;
         }
 
-
-        Disposable subscribe = Observable.fromIterable(points)
-                .map(DepositionPoint::getPartnerName)
-                .distinct()
-                .toList()
-                .flatMap(x -> partnersService.getPartnersByIds(x).subscribeOn(Schedulers.io()))
-                .toObservable()
-                .flatMapIterable(x -> x)
-                .collect((Callable<HashMap<String, String>>) HashMap::new, (m, p) -> m.put(p.getId(), p.getFullPictureUrl()))
+        Disposable subscribe = getBindingDataAsync(sortedPoints)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(m -> getViewState().updateList(sortedPoints, m));
+                .subscribe(x -> {
+                    this.currentData = x;
+                    getViewState().updateList(x);
+                });
+
         compositeDisposable.add(subscribe);
     }
+
+    private Single<List<DepositionPointsListAdapter.BindData>> getBindingDataAsync(List<DepositionPoint> points) {
+        List<String> ids = CollectionUtils.map(points, DepositionPoint::getPartnerName);
+
+        return partnersService
+                .getPartnersByIds(ids)
+                .subscribeOn(Schedulers.io())
+                .flatMap(x -> Single.just(getBindData(points, x, watchedService.isWatched(ids))));
+    }
+
+    private List<DepositionPointsListAdapter.BindData> getBindData(List<DepositionPoint> points,
+                                                                   HashMap<String, DepositionPartner> partners,
+                                                                   HashSet<String> watchedSet) {
+        List<DepositionPointsListAdapter.BindData> result = new ArrayList<>(points.size());
+        for (DepositionPoint point : points) {
+            boolean watched = watchedSet.contains(point.getExternalId());
+            DepositionPartner partner = partners.get(point.getPartnerName());
+            DepositionPointsListAdapter.BindData bindData =
+                    new DepositionPointsListAdapter.BindData(point, watched, partner);
+            result.add(bindData);
+        }
+        return result;
+    }
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         compositeDisposable.dispose();
+    }
+
+    public void updateWatched(int position) {
+        if (currentData == null)
+            return;
+        DepositionPointsListAdapter.BindData bindData = currentData.get(position);
+        bindData.setWatched(watchedService.isWatched(bindData.getPoint().getExternalId()));
+        getViewState().updateElement(bindData, position);
     }
 }

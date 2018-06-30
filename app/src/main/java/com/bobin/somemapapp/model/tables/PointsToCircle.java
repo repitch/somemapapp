@@ -13,7 +13,6 @@ public class PointsToCircle extends RealmObject {
     }
 
     private String depositionPointExternalId;
-    @PrimaryKey
     private String circleId;
 
     public String getDepositionPointExternalId() {

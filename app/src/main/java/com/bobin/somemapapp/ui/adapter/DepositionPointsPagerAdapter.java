@@ -44,7 +44,7 @@ public class DepositionPointsPagerAdapter extends FragmentPagerAdapter {
             if (fragment == null)
                 continue;
             if (fragment instanceof DepositionPointsListFragment) {
-                ((DepositionPointsListFragment) fragment).updateList(points, userLocation);
+                ((DepositionPointsListFragment) fragment).onPointsUpdated(points, userLocation);
                 return;
             }
         }

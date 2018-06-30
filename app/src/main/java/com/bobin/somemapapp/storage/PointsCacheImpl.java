@@ -17,11 +17,6 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 
 public class PointsCacheImpl implements PointsCache {
-    private DbRepository database;
-
-    public PointsCacheImpl() {
-        database = new DbRepositoryImpl();
-    }
 
     @Override
     public void savePoints(double latitude, double longitude, int radius,
@@ -36,10 +31,11 @@ public class PointsCacheImpl implements PointsCache {
 
         List<PointsToCircle> links = createPointsToCircleLinks(pointsCircle, points);
 
-        database.saveOrUpdate(pointsCircle);
-        database.saveOrUpdate(points);
-        database.saveOrUpdate(links);
-
+        Realm.getDefaultInstance().executeTransaction(r -> {
+            r.insertOrUpdate(pointsCircle);
+            r.insertOrUpdate(points);
+            r.insertOrUpdate(links);
+        });
         // просто всегда обновляю точки и все - владеющий круг все равно будет старше, и если он устареет, то удалим весь круг вместе с новыми точками
         // если внутри моего круга есть круг ЦЕЛИКОМ, то нафиг удаляем его с содержимым
     }
@@ -50,8 +46,7 @@ public class PointsCacheImpl implements PointsCache {
         Log.d("PointsCacheImpl", "getPointsOrNull lat: " + latitude + " lon: " + longitude + " rad: " + radius);
         PointsCircle targetCircle = new PointsCircle(latitude, longitude, radius);
         PointsCircle outerCircle = findOuterCircleOrNull(targetCircle);
-        if (outerCircle == null)
-        {
+        if (outerCircle == null) {
             Log.d("PointsCacheImpl", "no cache");
             return null;
         }
@@ -61,6 +56,7 @@ public class PointsCacheImpl implements PointsCache {
             terminateCircleAndNestedPoints(outerCircle);
             return null;
         }
+        Log.d("PointsCacheImpl", "loadPointsFromCircle");
         return loadPointsFromCircle(outerCircle, targetCircle);
         // если нашли круг, в который полностью содержит наш круг и он не старый, то возвращаем его узлы
         // если он старый, то удаляем его и возвращаем null
@@ -126,9 +122,11 @@ public class PointsCacheImpl implements PointsCache {
 
     @Nullable
     private PointsCircle findOuterCircleOrNull(PointsCircle targetCircle) {
-        List<PointsCircle> allCircles = database.getAll(PointsCircle.class);
+        Realm realm = Realm.getDefaultInstance();
+        List<PointsCircle> allCircles = realm.where(PointsCircle.class).findAll();
+
         for (PointsCircle circle : allCircles) {
-            if (circle.contains(targetCircle))
+            if (circle.contains(targetCircle) || circle.isTheSame(targetCircle))
                 return circle;
         }
         return null;
@@ -137,7 +135,10 @@ public class PointsCacheImpl implements PointsCache {
     @Nonnull
     private List<PointsCircle> findNestedCirclesOrNull(PointsCircle targetCircle) {
         List<PointsCircle> result = new ArrayList<>();
-        List<PointsCircle> allCircles = database.getAll(PointsCircle.class);
+
+        Realm realm = Realm.getDefaultInstance();
+        List<PointsCircle> allCircles = realm.where(PointsCircle.class).findAll();
+
         for (PointsCircle circle : allCircles) {
             if (targetCircle.contains(circle))
                 result.add(circle);

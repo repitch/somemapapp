@@ -2,6 +2,8 @@ package com.bobin.somemapapp.storage;
 
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import io.realm.Realm;
@@ -19,9 +21,6 @@ public class PartnersCacheImpl implements PartnersCache {
 
     @Override
     public DepositionPartner getPartnerByIdOrNull(String id) {
-        if (isExpired())
-            return null;
-
         Realm realm = Realm.getDefaultInstance();
         RealmResults<DepositionPartner> partners = realm.where(DepositionPartner.class)
                 .equalTo("id", id)
@@ -34,18 +33,22 @@ public class PartnersCacheImpl implements PartnersCache {
     }
 
     @Override
-    public List<DepositionPartner> getPartnersByIdsOrNull(String[] ids) {
-        if (isExpired())
-            return null;
+    public HashMap<String, DepositionPartner> getPartnersByIdsOrNull(String[] ids) {
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<DepositionPartner> partners = realm.where(DepositionPartner.class)
+        RealmResults<DepositionPartner> partnersFromRealm = realm.where(DepositionPartner.class)
                 .in("id", ids)
                 .findAll();
 
-        if (partners == null)
+        if (partnersFromRealm.size() == 0)
             return null;
 
-        return realm.copyFromRealm(partners);
+        List<DepositionPartner> partners = realm.copyFromRealm(partnersFromRealm);
+        HashMap<String, DepositionPartner> result = new HashMap<>();
+
+        for (DepositionPartner partner : partners)
+            result.put(partner.getId(), partner);
+
+        return result;
     }
 
     @Override
