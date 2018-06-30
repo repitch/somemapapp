@@ -38,7 +38,6 @@ public class DepositionPointsListFragment
     private Unbinder unbinder;
     private DepositionPointsListAdapter adapter;
     private MapCoordinates userLocation;
-    private Integer updateItemIdAfterResume;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,16 +90,12 @@ public class DepositionPointsListFragment
 
     @Override
     public void onClickPoint(DepositionPoint point, View iconView, int position) {
-        updateItemIdAfterResume = position;
         DepositionPointDetailActivity.start(getActivity(), point, userLocation, iconView);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (updateItemIdAfterResume != null) {
-            presenter.updateWatched(updateItemIdAfterResume);
-            updateItemIdAfterResume = null;
-        }
+        presenter.onResume();
     }
 }

@@ -96,18 +96,27 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
         return result;
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         compositeDisposable.dispose();
     }
 
-    public void updateWatched(int position) {
+    public void onResume() {
         if (currentData == null)
             return;
-        DepositionPointsListAdapter.BindData bindData = currentData.get(position);
-        bindData.setWatched(watchedService.isWatched(bindData.getPoint().getExternalId()));
-        getViewState().updateElement(bindData, position);
+
+        HashSet<String> watchedSet = watchedService
+                .isWatched(CollectionUtils.map(currentData, x -> x.getPoint().getExternalId()));
+
+        for (int i = 0; i < currentData.size(); ++i) {
+            DepositionPointsListAdapter.BindData data = currentData.get(i);
+            boolean oldWatched = data.isWatched();
+            boolean newWatched = watchedSet.contains(data.getPoint().getExternalId());
+            if (oldWatched != newWatched) {
+                data.setWatched(newWatched);
+                getViewState().updateElement(data, i);
+            }
+        }
     }
 }
