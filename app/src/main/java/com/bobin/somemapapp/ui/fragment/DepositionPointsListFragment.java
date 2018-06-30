@@ -74,6 +74,7 @@ public class DepositionPointsListFragment
     }
 
     public void onPointsUpdated(List<DepositionPoint> points, MapCoordinates userLocation) {
+        recyclerView.scrollToPosition(0);
         presenter.updateList(points, userLocation);
         this.userLocation = userLocation;
     }

@@ -17,6 +17,7 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
     private MapCoordinates userLocation;
     private PointClickListener clickListener;
     private List<BindData> data;
+    private int lastPosition = -1;
 
     @NonNull
     @Override
@@ -41,6 +42,7 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
         if (userLocation != null)
             meters = (int) GoogleMapUtils.distanceBetween(userLocation, data.point.getMapCoordinates());
         holder.bind(data, position, meters);
+        setAnimation(holder.itemView, position);
     }
 
     @Override
@@ -53,6 +55,7 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
     }
 
     public void setDataset(List<BindData> data, MapCoordinates userLocation) {
+        lastPosition = -1;
         this.data = data;
         this.userLocation = userLocation;
         notifyDataSetChanged();
@@ -61,6 +64,14 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
     public void updateElement(BindData data, int position) {
         this.data.set(position, data);
         notifyItemChanged(position);
+    }
+
+    private void setAnimation(View view, int position) {
+        if (position > lastPosition) {
+            view.setAlpha(0);
+            view.animate().setDuration(300).alpha(1);
+            lastPosition = position;
+        }
     }
 
     public interface PointClickListener {
