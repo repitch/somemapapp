@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
 
 public class PartnersServiceImpl implements PartnersService {
     private TinkoffApi tinkoffApi;
@@ -40,7 +39,6 @@ public class PartnersServiceImpl implements PartnersService {
             return Single.just(true);
 
         return tinkoffApi.getDepositionPartners("Credit")
-                .subscribeOn(Schedulers.io())
                 .toObservable()
                 .flatMapIterable(TinkoffApiResponse::getPayload)
                 .map(StorageUtils::convert)

@@ -1,7 +1,5 @@
 package com.bobin.somemapapp.presenter;
 
-import android.util.Pair;
-
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.bobin.somemapapp.MapApp;
@@ -74,17 +72,19 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
     }
 
     private Single<List<DepositionPointsListAdapter.BindData>> getBindingDataAsync(List<DepositionPoint> points) {
-        List<String> ids = CollectionUtils.map(points, DepositionPoint::getPartnerName);
+        List<String> partnersIds = CollectionUtils.map(points, DepositionPoint::getPartnerName);
 
         return partnersService
-                .getPartnersByIds(ids)
+                .getPartnersByIds(partnersIds)
                 .subscribeOn(Schedulers.io())
-                .flatMap(x -> Single.just(getBindData(points, x, watchedService.isWatched(ids))));
+                .flatMap(x -> Single.just(getBindData(points, x)));
     }
 
     private List<DepositionPointsListAdapter.BindData> getBindData(List<DepositionPoint> points,
-                                                                   HashMap<String, DepositionPartner> partners,
-                                                                   HashSet<String> watchedSet) {
+                                                                   HashMap<String, DepositionPartner> partners) {
+        List<String> pointsIds = CollectionUtils.map(points, DepositionPoint::getExternalId);
+        HashSet<String> watchedSet = watchedService.isWatched(pointsIds);
+
         List<DepositionPointsListAdapter.BindData> result = new ArrayList<>(points.size());
         for (DepositionPoint point : points) {
             boolean watched = watchedSet.contains(point.getExternalId());

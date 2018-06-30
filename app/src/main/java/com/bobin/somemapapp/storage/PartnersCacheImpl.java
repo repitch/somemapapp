@@ -3,7 +3,6 @@ package com.bobin.somemapapp.storage;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import io.realm.Realm;
@@ -35,11 +34,12 @@ public class PartnersCacheImpl implements PartnersCache {
     @Override
     public HashMap<String, DepositionPartner> getPartnersByIdsOrNull(String[] ids) {
         Realm realm = Realm.getDefaultInstance();
+
         RealmResults<DepositionPartner> partnersFromRealm = realm.where(DepositionPartner.class)
                 .in("id", ids)
                 .findAll();
 
-        if (partnersFromRealm.size() == 0)
+        if (ids.length != 0 && partnersFromRealm.size() == 0)
             return null;
 
         List<DepositionPartner> partners = realm.copyFromRealm(partnersFromRealm);
