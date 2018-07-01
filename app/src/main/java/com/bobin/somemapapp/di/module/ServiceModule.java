@@ -2,6 +2,7 @@ package com.bobin.somemapapp.di.module;
 
 import android.content.Context;
 
+import com.bobin.somemapapp.infrastructure.Clock;
 import com.bobin.somemapapp.infrastructure.DepositionPointsService;
 import com.bobin.somemapapp.infrastructure.DepositionPointsServiceImpl;
 import com.bobin.somemapapp.infrastructure.ExceptionsHandler;
@@ -42,7 +43,7 @@ public class ServiceModule {
 
     @Provides
     @Singleton
-    public ExceptionsHandler provideExceptionsHandler(Context context) {
-        return new ExceptionsHandler(context);
+    public ExceptionsHandler provideExceptionsHandler(Context context, Clock clock) {
+        return new ExceptionsHandler(context, clock);
     }
 }

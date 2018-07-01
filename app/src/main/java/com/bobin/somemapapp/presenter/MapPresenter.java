@@ -7,6 +7,7 @@ import android.util.Log;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.bobin.somemapapp.MapApp;
+import com.bobin.somemapapp.infrastructure.Clock;
 import com.bobin.somemapapp.infrastructure.DepositionPointsService;
 import com.bobin.somemapapp.infrastructure.ExceptionsHandler;
 import com.bobin.somemapapp.infrastructure.PartnersService;
@@ -52,6 +53,8 @@ public class MapPresenter extends MvpPresenter<MapView> {
     ScreenDensityUrlCalculator urlCalculator;
     @Inject
     ExceptionsHandler exceptionsHandler;
+    @Inject
+    Clock clock;
 
     public MapPresenter() {
         compositeDisposable = new CompositeDisposable();
@@ -97,7 +100,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 .subscribe(x -> {
                     getViewState().inProgress(false);
                     if (x.isSuccess()) {
-                        getViewState().showPins(x.pointsFromBounds());
+                        getViewState().showPins(x.pointsFromBounds(clock));
                         currentScreenData = x;
                     } else {
                         handleThrowable(x.error);
@@ -112,12 +115,12 @@ public class MapPresenter extends MvpPresenter<MapView> {
             return true;
         }
 
-        PointsCircle circle = GoogleMapUtils.toCircle(bounds);
+        PointsCircle circle = GoogleMapUtils.toCircle(bounds, clock);
 
         List<DepositionPoint> pointsFromCircle =
                 GoogleMapUtils.pointsFromCircle(circle, currentScreenData.points);
 
-        if (!currentScreenData.getCircle().contains(circle)) {
+        if (!currentScreenData.getCircle(clock).contains(circle)) {
             Log.d("MapPresenter", "!currentScreenData.circle.contains(circle)");
             return true;
         }
@@ -130,7 +133,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
     }
 
     private Observable<BoundsWithPoints> getDepositionPoints(CameraBounds bounds) {
-        final PointsCircle pointsCircle = GoogleMapUtils.toCircle(bounds);
+        final PointsCircle pointsCircle = GoogleMapUtils.toCircle(bounds, clock);
 
         return depositionPointsService.getPoints(pointsCircle)
                 .map(x -> new BoundsWithPoints(x, bounds))
@@ -196,12 +199,12 @@ public class MapPresenter extends MvpPresenter<MapView> {
             this.cameraBounds = cameraBounds;
         }
 
-        PointsCircle getCircle() {
-            return GoogleMapUtils.toCircle(cameraBounds);
+        PointsCircle getCircle(Clock clock) {
+            return GoogleMapUtils.toCircle(cameraBounds, clock);
         }
 
-        List<DepositionPoint> pointsFromBounds() {
-            return GoogleMapUtils.pointsFromCircle(getCircle(), points);
+        List<DepositionPoint> pointsFromBounds(Clock clock) {
+            return GoogleMapUtils.pointsFromCircle(getCircle(clock), points);
         }
 
         boolean isSuccess() {

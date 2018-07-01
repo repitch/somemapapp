@@ -2,6 +2,7 @@ package com.bobin.somemapapp.di.module;
 
 import android.content.Context;
 
+import com.bobin.somemapapp.infrastructure.Clock;
 import com.bobin.somemapapp.storage.KeyValueStorage;
 import com.bobin.somemapapp.storage.KeyValueStorageImpl;
 import com.bobin.somemapapp.storage.PartnersCache;
@@ -24,13 +25,13 @@ public class StorageModule {
 
     @Provides
     @Singleton
-    public PartnersCache providePartnersCache(KeyValueStorage keyValueStorage) {
-        return new PartnersCacheImpl(keyValueStorage);
+    public PartnersCache providePartnersCache(KeyValueStorage keyValueStorage, Clock clock) {
+        return new PartnersCacheImpl(keyValueStorage, clock);
     }
 
     @Provides
     @Singleton
-    public PointsCache providePointsCache() {
-        return new PointsCacheImpl();
+    public PointsCache providePointsCache(Clock clock) {
+        return new PointsCacheImpl(clock);
     }
 }

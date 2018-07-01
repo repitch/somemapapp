@@ -1,5 +1,6 @@
 package com.bobin.somemapapp.model.tables;
 
+import com.bobin.somemapapp.infrastructure.Clock;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 
@@ -9,16 +10,19 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 public class PointsCircle extends RealmObject {
-    public PointsCircle(double centerLatitude, double centerLongitude, int radius) {
-        this();
+    public PointsCircle() {
+    }
+
+    public PointsCircle(double centerLatitude, double centerLongitude, int radius, Clock clock) {
+        this(clock);
         this.centerLatitude = centerLatitude;
         this.centerLongitude = centerLongitude;
         this.radius = radius;
     }
 
-    public PointsCircle() {
+    public PointsCircle(Clock clock) {
         id = UUID.randomUUID().toString();
-        timestamp = System.currentTimeMillis();
+        timestamp = clock.currentTimeInMillis();
     }
 
     @PrimaryKey

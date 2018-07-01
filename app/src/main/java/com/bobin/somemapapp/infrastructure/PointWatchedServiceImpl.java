@@ -1,6 +1,7 @@
 package com.bobin.somemapapp.infrastructure;
 
 import com.bobin.somemapapp.model.tables.PointWatchState;
+import com.bobin.somemapapp.utils.CollectionUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -11,9 +12,7 @@ import io.realm.RealmResults;
 public class PointWatchedServiceImpl implements PointWatchedService {
     @Override
     public HashSet<String> isWatched(List<String> ids) {
-        String[] idsArray = new String[ids.size()];
-        for (int i = 0; i < ids.size(); ++i)
-            idsArray[i] = ids.get(i);
+        String[] idsArray = CollectionUtils.toArray(ids);
 
         Realm realm = Realm.getDefaultInstance();
         RealmResults<PointWatchState> states = realm.where(PointWatchState.class)

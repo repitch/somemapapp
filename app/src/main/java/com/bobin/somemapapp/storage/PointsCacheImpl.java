@@ -3,6 +3,7 @@ package com.bobin.somemapapp.storage;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.bobin.somemapapp.infrastructure.Clock;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
 import com.bobin.somemapapp.model.tables.PointsToCircle;
@@ -20,6 +21,11 @@ import static com.bobin.somemapapp.utils.CollectionUtils.all;
 import static com.bobin.somemapapp.utils.CollectionUtils.filter;
 
 public class PointsCacheImpl implements PointsCache {
+    private Clock clock;
+
+    public PointsCacheImpl(Clock clock) {
+        this.clock = clock;
+    }
 
     @Override
     public void savePoints(double latitude, double longitude, int radius,
@@ -27,7 +33,7 @@ public class PointsCacheImpl implements PointsCache {
         if (points.size() == 0)
             return;
 
-        PointsCircle pointsCircle = new PointsCircle(latitude, longitude, radius);
+        PointsCircle pointsCircle = new PointsCircle(latitude, longitude, radius, clock);
         List<PointsCircle> circlesToDelete = findNestedCircles(pointsCircle);
 
         terminateCirclesAndNestedPoints(circlesToDelete, true);
@@ -45,7 +51,7 @@ public class PointsCacheImpl implements PointsCache {
     @Override
     public List<DepositionPoint> getPointsOrNull(double latitude, double longitude, int radius) {
         Log.d("PointsCacheImpl", "getPointsOrNull lat: " + latitude + " lon: " + longitude + " rad: " + radius);
-        PointsCircle targetCircle = new PointsCircle(latitude, longitude, radius);
+        PointsCircle targetCircle = new PointsCircle(latitude, longitude, radius, clock);
         PointsCircle outerCircle = findOuterCircleOrNull(targetCircle);
         if (outerCircle == null) {
             Log.d("PointsCacheImpl", "no cache");
@@ -123,7 +129,7 @@ public class PointsCacheImpl implements PointsCache {
                                                        List<DepositionPoint> points) {
         Realm realm = Realm.getDefaultInstance();
 
-        long now = System.currentTimeMillis();
+        long now = clock.currentTimeInMillis();
         final long tenMinutes = 1000 * 60 * 10;
 
         RealmResults<PointsCircle> allCircles = realm.where(PointsCircle.class)
@@ -170,7 +176,7 @@ public class PointsCacheImpl implements PointsCache {
     }
 
     private boolean timeExpired(PointsCircle circle) {
-        long now = System.currentTimeMillis();
+        long now = clock.currentTimeInMillis();
         return now - circle.getTimestamp() > 1000 * 60 * 10;
     }
 }

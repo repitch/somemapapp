@@ -1,5 +1,6 @@
 package com.bobin.somemapapp.storage;
 
+import com.bobin.somemapapp.infrastructure.Clock;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 
 import java.util.HashMap;
@@ -11,11 +12,13 @@ import io.realm.RealmResults;
 public class PartnersCacheImpl implements PartnersCache {
 
     private KeyValueStorage keyValueStorage;
+    private Clock clock;
 
     private static final String PARTNERS_UPDATE_KEY = "partnersUpdateTime";
 
-    public PartnersCacheImpl(KeyValueStorage keyValueStorage) {
+    public PartnersCacheImpl(KeyValueStorage keyValueStorage, Clock clock) {
         this.keyValueStorage = keyValueStorage;
+        this.clock = clock;
     }
 
     @Override
@@ -58,12 +61,12 @@ public class PartnersCacheImpl implements PartnersCache {
             r.delete(DepositionPartner.class);
             r.insert(partners);
         });
-        keyValueStorage.save(PARTNERS_UPDATE_KEY, System.currentTimeMillis());
+        keyValueStorage.save(PARTNERS_UPDATE_KEY, clock.currentTimeInMillis());
     }
 
     @Override
     public boolean isExpired() {
-        long now = System.currentTimeMillis();
+        long now = clock.currentTimeInMillis();
         long lastUpdate = keyValueStorage.getLong(PARTNERS_UPDATE_KEY);
         return now - lastUpdate > 1000 * 60 * 10;
     }

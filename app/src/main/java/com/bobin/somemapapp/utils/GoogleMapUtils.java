@@ -4,6 +4,7 @@ import android.content.Context;
 import android.location.Location;
 
 import com.bobin.somemapapp.R;
+import com.bobin.somemapapp.infrastructure.Clock;
 import com.bobin.somemapapp.model.CameraBounds;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.response.LocationResponse;
@@ -93,13 +94,14 @@ public final class GoogleMapUtils {
                 pointInsideCircle(circle, bounds.getRightBottom());
     }
 
-    public static PointsCircle toCircle(CameraBounds bounds) {
+    public static PointsCircle toCircle(CameraBounds bounds, Clock clock) {
         float radius = GoogleMapUtils.distanceBetween(bounds.getLeftTop(), bounds.getCenter());
 
         return new PointsCircle(
                 bounds.getCenter().getLatitude(),
                 bounds.getCenter().getLongitude(),
-                (int) radius);
+                (int) radius,
+                clock);
     }
 
     public static String distanceToString(Context context, int meters) {
