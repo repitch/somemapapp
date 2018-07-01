@@ -1,13 +1,14 @@
 package com.bobin.somemapapp.ui.view;
 
 import com.arellomobile.mvp.MvpView;
-import com.bobin.somemapapp.model.CameraBounds;
+import com.arellomobile.mvp.viewstate.strategy.SingleStateStrategy;
+import com.arellomobile.mvp.viewstate.strategy.StateStrategyType;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
-import com.bobin.somemapapp.model.tables.PointsCircle;
 
 import java.util.List;
 
+@StateStrategyType(SingleStateStrategy.class)
 public interface MapView extends MvpView {
     void setMyLocationButtonEnabled(Boolean value);
 

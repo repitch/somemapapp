@@ -53,6 +53,7 @@ public class MapFragment
     private DepositionPointsChangedListener depositionPointsChangedListener;
     private MapCoordinates currentUserLocation;
     private boolean firstLaunch;
+    private PointDetailBottomSheet currentBottomSheet;
 
     @Override
     public void onAttach(Context context) {
@@ -138,10 +139,12 @@ public class MapFragment
         FragmentActivity activity = getActivity();
         if (activity == null)
             return;
+        if (currentBottomSheet != null && currentBottomSheet.isAdded())
+            currentBottomSheet.dismiss();
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        PointDetailBottomSheet.newInstance(point, name, iconUrl)
-                .setClickListener(this::onBottomSheetClick)
-                .show(fragmentManager, "PointDetailBottomSheet_" + name);
+        currentBottomSheet = PointDetailBottomSheet.newInstance(point, name, iconUrl)
+                .setClickListener(this::onBottomSheetClick);
+        currentBottomSheet.show(fragmentManager, "PointDetailBottomSheet_" + name);
     }
 
     @Override

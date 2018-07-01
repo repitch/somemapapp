@@ -1,25 +1,22 @@
 package com.bobin.somemapapp.ui.fragment;
 
+import android.app.Dialog;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.transition.Fade;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bobin.somemapapp.MapApp;
 import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.infrastructure.PointWatchedService;
-import com.bobin.somemapapp.infrastructure.PointWatchedServiceImpl;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.utils.ViewUtils;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 
 import javax.inject.Inject;
 
@@ -52,18 +49,28 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
     private static final String POINT_KEY = "point";
     private boolean onStartWatched;
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_points_small_details, container, false);
-    }
-
     private void onClick(View view) {
         if (clickListener != null)
             clickListener.onSheetClick(currentPoint, icon);
 
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
+        final View view = View.inflate(getContext(), R.layout.fragment_points_small_details, null);
+
+        ButterKnife.bind(this, view);
+        view.setOnClickListener(this::onClick);
+        initData();
+        eye.setVisibility(onStartWatched ? View.VISIBLE : View.GONE);
+
+        dialog.setContentView(view);
+        ((View) view.getParent()).setBackgroundColor(getContext().getResources().getColor(android.R.color.transparent));
+        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from((View) view.getParent());
+        dialog.setOnShowListener(dialog1 -> behavior.setPeekHeight(view.getHeight()));
+
+        return dialog;
     }
 
     public PointDetailBottomSheet setClickListener(ClickListener clickListener) {
@@ -99,18 +106,8 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        ButterKnife.bind(this, view);
-        view.setOnClickListener(this::onClick);
-        initData();
-        eye.setVisibility(onStartWatched ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        ((View) getView().getParent()).setBackgroundColor(getContext().getResources().getColor(android.R.color.transparent));
         boolean watched = watchedService.isWatched(currentPoint.getExternalId());
         int visibilityFlag = watched ? View.VISIBLE : View.INVISIBLE;
         if (watched != onStartWatched) {
