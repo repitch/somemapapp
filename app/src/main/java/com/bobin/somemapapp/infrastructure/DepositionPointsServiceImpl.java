@@ -10,7 +10,6 @@ import com.bobin.somemapapp.utils.StorageUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public class DepositionPointsServiceImpl implements DepositionPointsService {
@@ -39,7 +38,6 @@ public class DepositionPointsServiceImpl implements DepositionPointsService {
                 .map(StorageUtils::convert)
                 .toList()
                 .toObservable()
-                .onErrorResumeNext(Observable.just(new ArrayList<>(0)))
                 .doOnNext(x -> pointsCache.savePoints(latitude, longitude, radius, x))
                 .first(new ArrayList<>(0));
     }

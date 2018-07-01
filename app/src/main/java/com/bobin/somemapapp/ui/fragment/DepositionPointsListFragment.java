@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.transition.Fade;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -87,6 +88,13 @@ public class DepositionPointsListFragment
     @Override
     public void updateElement(DepositionPointsListAdapter.BindData data, int position) {
         adapter.updateElement(data, position);
+    }
+
+    @Override
+    public void showSnackbar(String message) {
+        View view = getView();
+        if (view != null)
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
 
     @Override

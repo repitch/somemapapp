@@ -83,4 +83,12 @@ public class PointsCircle extends RealmObject {
                 this.getRadius() == circle.getRadius();
     }
 
+    public boolean intersect(PointsCircle circle) {
+        float distance = GoogleMapUtils.distanceBetween(circle, this);
+        return distance < getRadius() + circle.getRadius();
+    }
+
+    public boolean contains(DepositionPoint point) {
+        return GoogleMapUtils.pointInsideCircle(this, point);
+    }
 }

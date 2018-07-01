@@ -15,4 +15,6 @@
     <string name="from">от</string>
     <string name="to">до</string>
     <string name="amount">всего</string>
+    <string name="no_internet">Отсутствует интернет-соединение</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
 </resources>

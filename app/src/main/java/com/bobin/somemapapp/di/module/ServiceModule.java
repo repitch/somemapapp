@@ -1,7 +1,10 @@
 package com.bobin.somemapapp.di.module;
 
+import android.content.Context;
+
 import com.bobin.somemapapp.infrastructure.DepositionPointsService;
 import com.bobin.somemapapp.infrastructure.DepositionPointsServiceImpl;
+import com.bobin.somemapapp.infrastructure.ExceptionsHandler;
 import com.bobin.somemapapp.infrastructure.PartnersService;
 import com.bobin.somemapapp.infrastructure.PartnersServiceImpl;
 import com.bobin.somemapapp.infrastructure.PointWatchedService;
@@ -35,5 +38,11 @@ public class ServiceModule {
     @Singleton
     public PointWatchedService providePointWatchedService() {
         return new PointWatchedServiceImpl();
+    }
+
+    @Provides
+    @Singleton
+    public ExceptionsHandler provideExceptionsHandler(Context context) {
+        return new ExceptionsHandler(context);
     }
 }

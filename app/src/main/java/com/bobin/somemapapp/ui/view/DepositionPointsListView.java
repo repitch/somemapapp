@@ -9,4 +9,6 @@ public interface DepositionPointsListView extends MvpView {
     void updateList(List<DepositionPointsListAdapter.BindData> data);
 
     void updateElement(DepositionPointsListAdapter.BindData data, int position);
+
+    void showSnackbar(String message);
 }

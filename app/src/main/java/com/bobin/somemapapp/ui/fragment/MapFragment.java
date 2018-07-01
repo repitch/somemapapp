@@ -6,6 +6,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -146,7 +147,14 @@ public class MapFragment
     @Override
     public void moveToPoint(MapCoordinates coordinates) {
         if (map != null)
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtils.toLatLng(coordinates), 15));
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(GoogleMapUtils.toLatLng(coordinates), 15));
+    }
+
+    @Override
+    public void showSnackbar(String message) {
+        View view = getView();
+        if (view != null)
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
 
     private void onBottomSheetClick(DepositionPoint point, View iconView) {
@@ -175,11 +183,11 @@ public class MapFragment
             return;
 
         VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
+
         CameraBounds cameraBounds = new CameraBounds(
                 GoogleMapUtils.toCoordinates(visibleRegion.farLeft),
                 GoogleMapUtils.toCoordinates(visibleRegion.nearRight),
                 GoogleMapUtils.toCoordinates(visibleRegion.latLngBounds.getCenter()));
-
         presenter.mapCameraStops(cameraBounds);
     }
 

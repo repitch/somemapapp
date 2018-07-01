@@ -16,4 +16,26 @@ public class CollectionUtils {
             result.add(mapper.invoke(item));
         return result;
     }
+
+    public static <T> List<T> filter(Collection<T> source, Func1<T, Boolean> predicate) {
+        List<T> result = new ArrayList<>(source.size() / 2);
+        for (T item : source)
+            if (predicate.invoke(item))
+                result.add(item);
+        return result;
+    }
+
+    public static <T> boolean any(Collection<T> source, Func1<T, Boolean> predicate) {
+        for (T item : source)
+            if (predicate.invoke(item))
+                return true;
+        return false;
+    }
+
+    public static <T> boolean all(Collection<T> source, Func1<T, Boolean> predicate) {
+        for (T item : source)
+            if (!predicate.invoke(item))
+                return false;
+        return true;
+    }
 }

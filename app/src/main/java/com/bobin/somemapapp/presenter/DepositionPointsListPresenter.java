@@ -3,6 +3,7 @@ package com.bobin.somemapapp.presenter;
 import com.arellomobile.mvp.InjectViewState;
 import com.arellomobile.mvp.MvpPresenter;
 import com.bobin.somemapapp.MapApp;
+import com.bobin.somemapapp.infrastructure.ExceptionsHandler;
 import com.bobin.somemapapp.infrastructure.PartnersService;
 import com.bobin.somemapapp.infrastructure.PointWatchedService;
 import com.bobin.somemapapp.model.MapCoordinates;
@@ -37,6 +38,8 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
     PointWatchedService watchedService;
     @Inject
     ScreenDensityUrlCalculator urlCalculator;
+    @Inject
+    ExceptionsHandler exceptionsHandler;
 
     private CompositeDisposable compositeDisposable;
     private List<DepositionPointsListAdapter.BindData> currentData;
@@ -47,7 +50,6 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
     }
 
     public void updateList(List<DepositionPoint> points, MapCoordinates userLocation) {
-
         final List<DepositionPoint> sortedPoints;
 
         if (userLocation != null) {
@@ -65,12 +67,20 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
 
         Disposable subscribe = getBindingDataAsync(sortedPoints)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(x -> {
-                    this.currentData = x;
-                    getViewState().updateList(x);
-                });
+                .subscribe(
+                        x -> {
+                            this.currentData = x;
+                            getViewState().updateList(x);
+                        },
+                        this::handleThrowable);
 
         compositeDisposable.add(subscribe);
+    }
+
+    private void handleThrowable(Throwable throwable) {
+        String message = exceptionsHandler.getSnackbarMessage(throwable);
+        if (message != null)
+            getViewState().showSnackbar(message);
     }
 
     private Single<List<DepositionPointsListAdapter.BindData>> getBindingDataAsync(List<DepositionPoint> points) {
@@ -116,9 +126,8 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
 
         for (int i = 0; i < currentData.size(); ++i) {
             DepositionPointsListAdapter.BindData data = currentData.get(i);
-            boolean oldWatched = data.isWatched();
             boolean newWatched = watchedSet.contains(data.getPoint().getExternalId());
-            if (oldWatched != newWatched) {
+            if (newWatched) {
                 data.setWatched(newWatched);
                 getViewState().updateElement(data, i);
             }

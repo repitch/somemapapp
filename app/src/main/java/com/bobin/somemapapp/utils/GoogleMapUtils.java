@@ -62,11 +62,12 @@ public final class GoogleMapUtils {
         return result;
     }
 
-    private static boolean pointInsideCircle(PointsCircle circle, MapCoordinates point) {
-        return distanceBetween(circle.getCenterMapCoordinates(), point) < circle.getRadius();
+    public static boolean pointInsideCircle(PointsCircle circle, MapCoordinates point) {
+        float distance = distanceBetween(circle.getCenterMapCoordinates(), point);
+        return distance < circle.getRadius();
     }
 
-    private static boolean pointInsideCircle(PointsCircle circle, DepositionPoint point) {
+    public static boolean pointInsideCircle(PointsCircle circle, DepositionPoint point) {
         return pointInsideCircle(circle, point.getMapCoordinates());
     }
 
