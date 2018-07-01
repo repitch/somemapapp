@@ -1,8 +1,8 @@
 package com.bobin.somemapapp;
 
-import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.bobin.somemapapp.helper.Config;
 import com.bobin.somemapapp.helper.DataGenerator;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.storage.KeyValueStorage;
@@ -17,18 +17,10 @@ import org.junit.runner.RunWith;
 import java.util.HashMap;
 import java.util.List;
 
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
-/**
- * Instrumented test, which will execute on an Android device.
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
 @RunWith(AndroidJUnit4.class)
 public class PartnersCacheImplTests {
     private PartnersCacheImpl partnersCache;
@@ -37,14 +29,9 @@ public class PartnersCacheImplTests {
 
     @Before
     public void setUp() {
-        Realm.init(InstrumentationRegistry.getTargetContext());
-        RealmConfiguration testConfig = new RealmConfiguration.Builder()
-                .inMemory()
-                .name("test-realm")
-                .build();
+        Config.initRealm();
 
-        Realm.setDefaultConfiguration(testConfig);
-        clock = new TestClock(0);
+        clock = new TestClock(42);
         keyValueStorage = new InMemoryKeyValueStorage();
         partnersCache = new PartnersCacheImpl(keyValueStorage, clock);
     }
