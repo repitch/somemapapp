@@ -1,10 +1,12 @@
 package com.bobin.somemapapp.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -21,6 +23,11 @@ public final class ViewUtils {
     public static void expand(final View v) {
         Animation a = expandAction(v);
         v.startAnimation(a);
+    }
+
+    public static float dpToPixels(Context context, int dp) {
+        Resources r = context.getResources();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
     }
 
     public static void collapse(final View v) {

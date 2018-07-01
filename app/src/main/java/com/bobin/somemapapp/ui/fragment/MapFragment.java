@@ -94,6 +94,7 @@ public class MapFragment
         clusterManager = new ClusterManager<>(getContext(), googleMap);
         clusterManager.setAlgorithm(new GridBasedAlgorithm<>());
         clusterManager.setAnimation(false);
+        clusterManager.setRenderer(new CustomClusterRenderer(getContext(), googleMap, clusterManager));
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setCompassEnabled(true);
         presenter.mapIsReady(getActivity());

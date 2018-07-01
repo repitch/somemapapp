@@ -48,8 +48,8 @@ public class DepositionPointsActivity
     private void initToolbar() {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.app_name);
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.map), 0);
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.points), 1);
+        tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.item_tab).setText(R.string.map), 0);
+        tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.item_tab).setText(R.string.points), 1);
         tabLayout.addOnTabSelectedListener(this);
         viewPager.addOnPageChangeListener(this);
         ViewUtils.changeAllTextViewsToCustomFont(toolbar);
