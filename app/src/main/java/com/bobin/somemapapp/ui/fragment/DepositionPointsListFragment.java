@@ -31,6 +31,8 @@ import butterknife.Unbinder;
 public class DepositionPointsListFragment
         extends MvpAppCompatFragment
         implements DepositionPointsListView, DepositionPointsListAdapter.PointClickListener {
+    public static final int DETAIL_REQUEST = 845;
+
     @BindView(R.id.deposition_points_list)
     RecyclerView recyclerView;
 
@@ -99,7 +101,7 @@ public class DepositionPointsListFragment
 
     @Override
     public void onClickPoint(DepositionPoint point, View iconView, int position) {
-        DepositionPointDetailActivity.start(getActivity(), point, userLocation, iconView);
+        DepositionPointDetailActivity.start(getActivity(), point, userLocation, iconView, DETAIL_REQUEST);
     }
 
     @Override

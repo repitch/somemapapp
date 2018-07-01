@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.TypedValue;
@@ -18,8 +20,26 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.util.List;
+
 // part of com.material.components project
 public final class ViewUtils {
+    @SuppressWarnings("unchecked")
+    public static <T extends Fragment> T findFragment(FragmentManager fragmentManager, Class<T> clazz) {
+        List<Fragment> fragments = fragmentManager.getFragments();
+
+        if (fragments == null)
+            return null;
+        for (Fragment fragment : fragments) {
+            if (fragment == null)
+                continue;
+            if (fragment.getClass().equals(clazz)) {
+                return (T) fragment;
+            }
+        }
+        return null;
+    }
+
     public static void expand(final View v) {
         Animation a = expandAction(v);
         v.startAnimation(a);

@@ -8,6 +8,7 @@ import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.fragment.DepositionPointsListFragment;
 import com.bobin.somemapapp.ui.fragment.MapFragment;
+import com.bobin.somemapapp.utils.ViewUtils;
 
 import java.util.List;
 
@@ -36,17 +37,8 @@ public class DepositionPointsPagerAdapter extends FragmentPagerAdapter {
     }
 
     public void updatePointsList(List<DepositionPoint> points, MapCoordinates userLocation) {
-        List<Fragment> fragments = fm.getFragments();
-
-        if (fragments == null)
-            return;
-        for (Fragment fragment : fragments) {
-            if (fragment == null)
-                continue;
-            if (fragment instanceof DepositionPointsListFragment) {
-                ((DepositionPointsListFragment) fragment).onPointsUpdated(points, userLocation);
-                return;
-            }
-        }
+        DepositionPointsListFragment fragment = ViewUtils.findFragment(fm, DepositionPointsListFragment.class);
+        if (fragment != null)
+            fragment.onPointsUpdated(points, userLocation);
     }
 }

@@ -1,5 +1,7 @@
 package com.bobin.somemapapp.ui.activity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -10,6 +12,8 @@ import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.MapCoordinates;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsPagerAdapter;
+import com.bobin.somemapapp.ui.fragment.DepositionPointsListFragment;
+import com.bobin.somemapapp.ui.fragment.MapFragment;
 import com.bobin.somemapapp.utils.ViewUtils;
 
 import java.util.List;
@@ -92,5 +96,19 @@ public class DepositionPointsActivity
     public void onChangeDepositionPoints(List<DepositionPoint> points, MapCoordinates userLocation) {
         fragmentsAdapter.updatePointsList(points, userLocation);
         tabLayout.getTabAt(1).setText(getString(R.string.points) + " (" + points.size() + ")");
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == DepositionPointsListFragment.DETAIL_REQUEST && resultCode == Activity.RESULT_OK) {
+            MapCoordinates mapCoordinates = DepositionPointDetailActivity.tryExtractActivityResult(data);
+            if (mapCoordinates == null)
+                return;
+            tabLayout.getTabAt(0).select();
+            viewPager.setCurrentItem(0);
+            MapFragment fragment = ViewUtils.findFragment(getSupportFragmentManager(), MapFragment.class);
+            if (fragment != null)
+                fragment.moveToPoint(mapCoordinates);
+        }
     }
 }

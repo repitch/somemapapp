@@ -46,13 +46,14 @@ public class DepositionPointDetailActivity
     private static final String PARTNER_ID_KEY = "partnerId";
     private static final String USER_LATITUDE_KEY = "uLatitude";
     private static final String USER_LONGITUDE_KEY = "uLongitude";
-    private static final String POINT_LATITUDE_KEY = "pLatitude";
-    private static final String POINT_LONGITUDE_KEY = "pLongitude";
     private static final String POINT_ADDRESS_KEY = "pAddress";
     private static final String TRANSITION_NAME_KEY = "transitionName";
     private static final String POINT_ID_KEY = "pointId";
     private static final String EXPANDED_BUTTONS_KEY = "expandedButtons";
     private static final String SELECTED_RESTRICTION_KEY = "selectedRestriction";
+    private static final String POINT_LATITUDE_KEY = "pLatitude";
+    private static final String POINT_LONGITUDE_KEY = "pLongitude";
+    private static final String SHOW_POINT_ON_MAP_KEY = "showOnMap";
 
     @BindView(R.id.description_button)
     ExpandHeader descriptionButton;
@@ -99,11 +100,28 @@ public class DepositionPointDetailActivity
 
     private Unbinder unbinder;
     private int selectedLimit;
+    private MapCoordinates pointLocation;
+
+    public static MapCoordinates tryExtractActivityResult(Intent intent) {
+        if (!intent.getBooleanExtra(SHOW_POINT_ON_MAP_KEY, false))
+            return null;
+        double latitude = intent.getDoubleExtra(POINT_LATITUDE_KEY, 0);
+        double longitude = intent.getDoubleExtra(POINT_LONGITUDE_KEY, 0);
+        return new MapCoordinates(latitude, longitude);
+    }
 
     public static void start(@Nonnull Activity activity,
                              @Nonnull DepositionPoint point,
                              @Nullable MapCoordinates userPosition,
                              @Nullable View iconView) {
+        start(activity, point, userPosition, iconView, 0);
+    }
+
+    public static void start(@Nonnull Activity activity,
+                             @Nonnull DepositionPoint point,
+                             @Nullable MapCoordinates userPosition,
+                             @Nullable View iconView,
+                             int requestCode) {
         ActivityOptions activityOptions = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && iconView != null) {
             activityOptions = ActivityOptions.makeSceneTransitionAnimation(
@@ -127,9 +145,9 @@ public class DepositionPointDetailActivity
         }
 
         if (activityOptions == null)
-            activity.startActivity(intent);
+            activity.startActivityForResult(intent, requestCode);
         else
-            activity.startActivity(intent, activityOptions.toBundle());
+            activity.startActivityForResult(intent, requestCode, activityOptions.toBundle());
     }
 
     @Override
@@ -164,7 +182,7 @@ public class DepositionPointDetailActivity
         String partnerId = intent.getStringExtra(PARTNER_ID_KEY);
         String pointId = intent.getStringExtra(POINT_ID_KEY);
         String pointAddress = intent.getStringExtra(POINT_ADDRESS_KEY);
-        MapCoordinates pointLocation = new MapCoordinates(
+        pointLocation = new MapCoordinates(
                 intent.getDoubleExtra(POINT_LATITUDE_KEY, 0),
                 intent.getDoubleExtra(POINT_LONGITUDE_KEY, 0));
 
@@ -182,6 +200,16 @@ public class DepositionPointDetailActivity
 
         presenter.onStart(partnerId, pointLocation, userPosition);
         presenter.setPointWatched(pointId);
+    }
+
+    @OnClick(R.id.show_on_map)
+    public void showOnMap() {
+        Intent intent = new Intent();
+        intent.putExtra(SHOW_POINT_ON_MAP_KEY, true)
+                .putExtra(POINT_LATITUDE_KEY, pointLocation.getLatitude())
+                .putExtra(POINT_LONGITUDE_KEY, pointLocation.getLongitude());
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
     @OnClick(R.id.go_to_web_site)
@@ -241,6 +269,12 @@ public class DepositionPointDetailActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setResult(RESULT_CANCELED);
     }
 
     @Override
