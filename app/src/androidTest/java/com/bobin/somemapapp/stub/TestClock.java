@@ -9,10 +9,6 @@ public class TestClock implements Clock {
         this.current = current;
     }
 
-    public long getCurrent() {
-        return current;
-    }
-
     public void addMillis(long value) {
         current += value;
     }

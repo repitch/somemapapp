@@ -27,7 +27,7 @@ import static junit.framework.Assert.assertNull;
 public class PointsCacheImplTest {
     private PointsCacheImpl pointsCache;
     private TestClock clock;
-    private static final long TEN_MINUTES = 1000 * 60 * 10;
+    private static final long ONE_MINUTE = 1000 * 60;
 
     @Before
     public void setUp() {
@@ -35,6 +35,15 @@ public class PointsCacheImplTest {
 
         clock = new TestClock(42);
         pointsCache = new PointsCacheImpl(clock);
+    }
+
+    @Test
+    public void nothingSaved() {
+        int radius = 80000; // meters
+
+        List<DepositionPoint> points = pointsCache.getPointsOrNull(0, 0, radius);
+
+        assertNull(points);
     }
 
     @Test
@@ -77,7 +86,7 @@ public class PointsCacheImplTest {
                 DataGenerator.depositionPointAt(0.1, 0.1) //distance ~15690
         );
         pointsCache.savePoints(0, 0, radius, depositionPoints);
-        clock.addMillis(TEN_MINUTES + 500);
+        clock.addMillis(ONE_MINUTE * 10 + 500);
 
         List<DepositionPoint> points = pointsCache.getPointsOrNull(0, 0, radius);
 
@@ -124,10 +133,9 @@ public class PointsCacheImplTest {
         PointsCircle circle2 = DataGenerator.circleAt(0, 0.5, 111000, clock);
 
         save(circle1, point1, point2);
-        clock.addMillis(TEN_MINUTES / 2);
+        clock.addMillis(ONE_MINUTE * 5);
         save(circle2, point2, point3);
-        clock.setCurrent(TEN_MINUTES + 500);
-
+        clock.setCurrent(ONE_MINUTE * 10 + 500);
         List<DepositionPoint> pointsFromCircle1 = load(circle1);
         List<DepositionPoint> pointsFromCircle2 = load(circle2);
 
@@ -136,6 +144,123 @@ public class PointsCacheImplTest {
         assertEquals(2, pointsFromCircle2.size());
         MyAsserts.assertAny(pointsFromCircle2, x -> x.getExternalId().equals(point2.getExternalId()));
         MyAsserts.assertAny(pointsFromCircle2, x -> x.getExternalId().equals(point3.getExternalId()));
+    }
+
+    @Test
+    public void nestedCircleUpdatesPointsFromOuterCircle() {
+        DepositionPoint point1 = DataGenerator.depositionPointAt(0, -0.5);
+        DepositionPoint point2 = DataGenerator.depositionPointAt(0, 0);
+        PointsCircle circle1 = DataGenerator.circleAt(0, -0.5, 111000, clock);
+        PointsCircle circle2 = DataGenerator.circleAt(0, -0.5, 10000, clock);
+
+        save(circle1, point1, point2);
+        clock.addMillis(ONE_MINUTE * 3);
+        save(circle2, point1);
+        clock.addMillis(ONE_MINUTE);
+        List<DepositionPoint> pointsFromCircle1 = load(circle1);
+        List<DepositionPoint> pointsFromCircle2 = load(circle2);
+
+        assertNotNull(pointsFromCircle1);
+        assertNotNull(pointsFromCircle2);
+        assertEquals(2, pointsFromCircle1.size());
+        assertEquals(1, pointsFromCircle2.size());
+        MyAsserts.assertAny(pointsFromCircle1, x -> x.getExternalId().equals(point1.getExternalId()));
+        MyAsserts.assertAny(pointsFromCircle1, x -> x.getExternalId().equals(point2.getExternalId()));
+        assertEquals(pointsFromCircle2.get(0).getExternalId(), point1.getExternalId());
+    }
+
+    @Test
+    public void nestedCircleUpdatesPointsFromOuterExpiredCircle() {
+        DepositionPoint point1 = DataGenerator.depositionPointAt(0, -0.5);
+        DepositionPoint point2 = DataGenerator.depositionPointAt(0, 0);
+        PointsCircle circle1 = DataGenerator.circleAt(0, -0.5, 111000, clock);
+        PointsCircle circle2 = DataGenerator.circleAt(0, -0.5, 10000, clock);
+
+        save(circle1, point1, point2);
+        clock.addMillis(ONE_MINUTE * 3);
+        save(circle2, point1);
+        clock.setCurrent(ONE_MINUTE * 10 + 500);
+        List<DepositionPoint> pointsFromCircle1 = load(circle1);
+        List<DepositionPoint> pointsFromCircle2 = load(circle2);
+
+        assertNull(pointsFromCircle1);
+        assertNotNull(pointsFromCircle2);
+        assertEquals(1, pointsFromCircle2.size());
+        assertEquals(pointsFromCircle2.get(0).getExternalId(), point1.getExternalId());
+    }
+
+    @Test
+    public void nestedCircleUpdatesPointsFromOuterExpiredCircleWithActualIntersectedCircle() {
+        DepositionPoint point1 = DataGenerator.depositionPointAt(0, -0.5);
+        DepositionPoint point2 = DataGenerator.depositionPointAt(0, 0);
+        DepositionPoint point3 = DataGenerator.depositionPointAt(0, 0.5);
+        PointsCircle circle1 = DataGenerator.circleAt(0, -0.5, 111000, clock);
+        PointsCircle circle2 = DataGenerator.circleAt(0, 0.5, 111000, clock);
+        PointsCircle circle3 = DataGenerator.circleAt(0, -0.5, 10000, clock);
+
+        save(circle1, point1, point2);
+        clock.addMillis(ONE_MINUTE * 5);
+        save(circle2, point2, point3);
+        clock.addMillis(ONE_MINUTE * 5 + 500);
+        save(circle3, point1);
+        List<DepositionPoint> pointsFromCircle1 = load(circle1);
+        List<DepositionPoint> pointsFromCircle2 = load(circle2);
+        List<DepositionPoint> pointsFromCircle3 = load(circle3);
+
+        assertNull(pointsFromCircle1);
+        assertNotNull(pointsFromCircle2);
+        assertNotNull(pointsFromCircle3);
+        assertEquals(2, pointsFromCircle2.size());
+        assertEquals(1, pointsFromCircle3.size());
+        MyAsserts.assertAny(pointsFromCircle2, x -> x.getExternalId().equals(point2.getExternalId()));
+        MyAsserts.assertAny(pointsFromCircle2, x -> x.getExternalId().equals(point3.getExternalId()));
+        MyAsserts.assertAny(pointsFromCircle3, x -> x.getExternalId().equals(point1.getExternalId()));
+    }
+
+    @Test
+    public void outerCircleUpdatesPointsFromActualNestedCircle() {
+        DepositionPoint point1 = DataGenerator.depositionPointAt(0, 0);
+        DepositionPoint point2 = DataGenerator.depositionPointAt(0, 0.5);
+        PointsCircle circle1 = DataGenerator.circleAt(0, 0, 10000, clock);
+        PointsCircle circle2 = DataGenerator.circleAt(0, 0, 111000, clock);
+
+        save(circle1, point1);
+        clock.addMillis(ONE_MINUTE * 5);
+        save(circle2, point1, point2);
+        clock.addMillis(ONE_MINUTE * 3);
+        List<DepositionPoint> pointsFromCircle1 = load(circle1);
+        List<DepositionPoint> pointsFromCircle2 = load(circle2);
+
+        assertNotNull(pointsFromCircle1);
+        assertNotNull(pointsFromCircle2);
+        assertEquals(1, pointsFromCircle1.size());
+        assertEquals(2, pointsFromCircle2.size());
+        MyAsserts.assertAny(pointsFromCircle1, x -> x.getExternalId().equals(point1.getExternalId()));
+        MyAsserts.assertAny(pointsFromCircle2, x -> x.getExternalId().equals(point1.getExternalId()));
+        MyAsserts.assertAny(pointsFromCircle2, x -> x.getExternalId().equals(point2.getExternalId()));
+    }
+
+    @Test
+    public void outerCircleUpdatesPointsFromExpiredNestedCircle() {
+        DepositionPoint point1 = DataGenerator.depositionPointAt(0, 0);
+        DepositionPoint point2 = DataGenerator.depositionPointAt(0, 0.5);
+        PointsCircle circle1 = DataGenerator.circleAt(0, 0, 10000, clock);
+        PointsCircle circle2 = DataGenerator.circleAt(0, 0, 111000, clock);
+
+        save(circle1, point1);
+        clock.addMillis(ONE_MINUTE * 5);
+        save(circle2, point1, point2);
+        clock.addMillis(ONE_MINUTE * 6);
+        List<DepositionPoint> pointsFromCircle1 = load(circle1);
+        List<DepositionPoint> pointsFromCircle2 = load(circle2);
+
+        assertNotNull(pointsFromCircle1);
+        assertNotNull(pointsFromCircle2);
+        assertEquals(1, pointsFromCircle1.size());
+        assertEquals(2, pointsFromCircle2.size());
+        MyAsserts.assertAny(pointsFromCircle1, x -> x.getExternalId().equals(point1.getExternalId()));
+        MyAsserts.assertAny(pointsFromCircle2, x -> x.getExternalId().equals(point1.getExternalId()));
+        MyAsserts.assertAny(pointsFromCircle2, x -> x.getExternalId().equals(point2.getExternalId()));
     }
 
     private List<DepositionPoint> load(PointsCircle circle) {
