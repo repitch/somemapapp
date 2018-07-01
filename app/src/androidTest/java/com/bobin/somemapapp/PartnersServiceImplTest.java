@@ -17,6 +17,7 @@ import java.util.List;
 import io.reactivex.observers.TestObserver;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 public class PartnersServiceImplTest {
@@ -40,6 +41,7 @@ public class PartnersServiceImplTest {
         partnersService.getPartnerById(partners.get(0).getId()).subscribe(subscriber);
 
         subscriber.assertValue(result -> result.getId().equals(partners.get(0).getId()));
+        assertFalse(tinkoffApi.isCalledPoints());
     }
 
     @Test
