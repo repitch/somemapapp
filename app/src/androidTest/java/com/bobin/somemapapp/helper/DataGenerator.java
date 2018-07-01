@@ -1,6 +1,10 @@
 package com.bobin.somemapapp.helper;
 
 import com.bobin.somemapapp.infrastructure.Clock;
+import com.bobin.somemapapp.model.response.DepositionPartnerResponse;
+import com.bobin.somemapapp.model.response.DepositionPartnersResponse;
+import com.bobin.somemapapp.model.response.DepositionPointResponse;
+import com.bobin.somemapapp.model.response.DepositionPointsResponse;
 import com.bobin.somemapapp.model.tables.DepositionPartner;
 import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.model.tables.PointsCircle;
@@ -12,6 +16,15 @@ import java.util.Random;
 
 public final class DataGenerator {
     private DataGenerator() {
+    }
+
+    public static List<String> ids(DepositionPartnersResponse partnersResponse, int take) {
+        List<DepositionPartnerResponse> payload = partnersResponse.getPayload();
+        List<String> result = new ArrayList<>(take);
+        for (int i = 0; i < take; ++i)
+            result.add(payload.get(i).getId());
+
+        return result;
     }
 
     public static String[] ids(List<DepositionPartner> partners) {
@@ -33,6 +46,39 @@ public final class DataGenerator {
             result.add(generatePartner());
 
         return result;
+    }
+
+    public static List<DepositionPartner> convert(DepositionPartnersResponse response) {
+        List<DepositionPartner> result = new ArrayList<>();
+        for (DepositionPartnerResponse partnerResponse : response.getPayload()) {
+            DepositionPartner partner = new DepositionPartner();
+            partner.setId(partnerResponse.getId());
+            result.add(partner);
+        }
+        return result;
+    }
+
+    public static DepositionPointsResponse generatePointsResponse() {
+        DepositionPointResponse pointResponse = new DepositionPointResponse();
+        pointResponse.setExternalId(randomString());
+        DepositionPointsResponse response = new DepositionPointsResponse();
+        response.setPayload(asList(pointResponse));
+        return response;
+    }
+
+    public static DepositionPartnersResponse generatePartnersResponse(int count) {
+        List<DepositionPartnerResponse> partners = new ArrayList<>();
+
+        for (int i = 0; i < count; i++) {
+            DepositionPartnerResponse partnerResponse = new DepositionPartnerResponse();
+            partnerResponse.setLimits(new ArrayList<>());
+            partnerResponse.setId(randomString());
+            partners.add(partnerResponse);
+        }
+
+        DepositionPartnersResponse response = new DepositionPartnersResponse();
+        response.setPayload(partners);
+        return response;
     }
 
     public static DepositionPartner generatePartner() {
