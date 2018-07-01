@@ -51,6 +51,17 @@ public class DepositionPointDetailActivity
     private static final String POINT_ADDRESS_KEY = "pAddress";
     private static final String TRANSITION_NAME_KEY = "transitionName";
     private static final String POINT_ID_KEY = "pointId";
+    private static final String EXPANDED_BUTTONS_KEY = "expandedButtons";
+    private static final String SELECTED_RESTRICTION_KEY = "selectedRestriction";
+
+    @BindView(R.id.description_button)
+    ExpandHeader descriptionButton;
+    @BindView(R.id.deposition_time_button)
+    ExpandHeader depositionTimeButton;
+    @BindView(R.id.deposition_point_type_button)
+    ExpandHeader depositionPointTypeButton;
+    @BindView(R.id.restrictions_button)
+    ExpandHeader restrictionsButton;
 
     @BindView(R.id.description_content)
     FrameLayout descriptionContent;
@@ -87,6 +98,7 @@ public class DepositionPointDetailActivity
     DepositionPointDetailPresenter presenter;
 
     private Unbinder unbinder;
+    private int selectedLimit;
 
     public static void start(@Nonnull Activity activity,
                              @Nonnull DepositionPoint point,
@@ -130,6 +142,22 @@ public class DepositionPointDetailActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ViewUtils.changeAllTextViewsToCustomFont(toolbar);
         notifyPresenterStart(getIntent());
+        if (savedInstanceState != null)
+            loadState(savedInstanceState);
+    }
+
+    private void loadState(Bundle savedInstanceState) {
+        if (savedInstanceState.containsKey(EXPANDED_BUTTONS_KEY)) {
+            boolean[] expanded = savedInstanceState.getBooleanArray(EXPANDED_BUTTONS_KEY);
+            if (expanded == null || expanded.length != 4)
+                return;
+            if (expanded[0]) toggleSection(descriptionButton, descriptionContent);
+            if (expanded[1]) toggleSection(depositionTimeButton, depositionTimeContent);
+            if (expanded[2]) toggleSection(depositionPointTypeButton, depositionPointTypeContent);
+            if (expanded[3]) toggleSection(restrictionsButton, restrictionsContent);
+        }
+
+        selectedLimit = savedInstanceState.getInt(SELECTED_RESTRICTION_KEY, 0);
     }
 
     private void notifyPresenterStart(Intent intent) {
@@ -234,7 +262,7 @@ public class DepositionPointDetailActivity
                 R.layout.item_spinner,
                 R.id.text,
                 filtered));
-
+        restrictionsSelector.setSelection(selectedLimit);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             startPostponedEnterTransition();
 
@@ -253,6 +281,7 @@ public class DepositionPointDetailActivity
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        selectedLimit = position;
         Limit limit = presenter.getLimit(position);
         moneyRestrictions.setText(getDescription(limit));
     }
@@ -265,6 +294,19 @@ public class DepositionPointDetailActivity
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        boolean[] expanded = new boolean[4];
+        expanded[0] = descriptionButton.isExpanded();
+        expanded[1] = depositionTimeButton.isExpanded();
+        expanded[2] = depositionPointTypeButton.isExpanded();
+        expanded[3] = restrictionsButton.isExpanded();
+        outState.putBooleanArray(EXPANDED_BUTTONS_KEY, expanded);
+        outState.putInt(SELECTED_RESTRICTION_KEY, selectedLimit);
     }
 }
 
