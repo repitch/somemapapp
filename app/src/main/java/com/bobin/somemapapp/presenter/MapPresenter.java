@@ -87,6 +87,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
         Disposable subscribe = cameraBoundsPublishSubject
                 .debounce(1L, TimeUnit.SECONDS)
                 .flatMap(x -> {
+                    getViewState().inProgress(true);
                     if (needLoadPoints(x))
                         return getDepositionPoints(x).observeOn(Schedulers.io());
                     currentScreenData.cameraBounds = x;
@@ -94,6 +95,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(x -> {
+                    getViewState().inProgress(false);
                     if (x.isSuccess()) {
                         getViewState().showPins(x.pointsFromBounds());
                         currentScreenData = x;
@@ -156,6 +158,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
     }
 
     private void handleThrowable(Throwable throwable) {
+        getViewState().inProgress(false);
         String message = exceptionsHandler.getSnackbarMessage(throwable);
         if (message != null)
             getViewState().showSnackbar(message);

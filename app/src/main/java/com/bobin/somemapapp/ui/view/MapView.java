@@ -19,5 +19,7 @@ public interface MapView extends MvpView {
     void moveToPoint(MapCoordinates coordinates);
 
     void showSnackbar(String message);
+
+    void inProgress(boolean value);
 }
 

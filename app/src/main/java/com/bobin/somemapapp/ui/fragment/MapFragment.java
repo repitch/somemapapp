@@ -2,17 +2,22 @@ package com.bobin.somemapapp.ui.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.arellomobile.mvp.MvpAppCompatFragment;
 import com.arellomobile.mvp.presenter.InjectPresenter;
@@ -38,6 +43,9 @@ import com.google.maps.android.clustering.algo.GridBasedAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MapFragment
         extends MvpAppCompatFragment
         implements OnMapReadyCallback,
@@ -48,12 +56,16 @@ public class MapFragment
     @InjectPresenter
     MapPresenter presenter;
 
+    @BindView(R.id.progress)
+    ProgressBar progressBar;
+
     private GoogleMap map;
     private ClusterManager<DepositionPointClusterItem> clusterManager;
     private DepositionPointsChangedListener depositionPointsChangedListener;
     private MapCoordinates currentUserLocation;
     private boolean firstLaunch;
     private PointDetailBottomSheet currentBottomSheet;
+    private Handler handler;
 
     @Override
     public void onAttach(Context context) {
@@ -75,17 +87,24 @@ public class MapFragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ButterKnife.bind(this, view);
+        progressBar.getIndeterminateDrawable()
+                .setColorFilter(ContextCompat.getColor(view.getContext(), R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
         FragmentActivity activity = getActivity();
         if (activity == null)
             return;
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        SupportMapFragment supportMapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map_container);
 
-        FragmentManager fm = activity.getSupportFragmentManager();
-        SupportMapFragment supportMapFragment = SupportMapFragment.newInstance();
-        fm.beginTransaction().replace(R.id.map_container, supportMapFragment).commit();
+        if (supportMapFragment == null) {
+            supportMapFragment = SupportMapFragment.newInstance();
+            fragmentManager.beginTransaction().replace(R.id.map_container, supportMapFragment).commit();
+        }
         supportMapFragment.getMapAsync(this);
 
         firstLaunch = savedInstanceState == null;
+        handler = new Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -159,6 +178,11 @@ public class MapFragment
         View view = getView();
         if (view != null)
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void inProgress(boolean value) {
+        handler.post(() -> progressBar.setVisibility(value ? View.VISIBLE : View.GONE));
     }
 
     private void onBottomSheetClick(DepositionPoint point, View iconView) {
