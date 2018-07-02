@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CollectionUtils {
+public final class CollectionUtils {
     public static String[] toArray(List<String> strings) {
         String[] array = new String[strings.size()];
         return strings.toArray(array);

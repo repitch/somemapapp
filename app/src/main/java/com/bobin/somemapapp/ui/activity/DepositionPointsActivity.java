@@ -14,6 +14,7 @@ import com.bobin.somemapapp.model.tables.DepositionPoint;
 import com.bobin.somemapapp.ui.adapter.DepositionPointsPagerAdapter;
 import com.bobin.somemapapp.ui.fragment.DepositionPointsListFragment;
 import com.bobin.somemapapp.ui.fragment.MapFragment;
+import com.bobin.somemapapp.utils.AppUtils;
 import com.bobin.somemapapp.utils.ViewUtils;
 
 import java.util.List;
@@ -106,7 +107,7 @@ public class DepositionPointsActivity
                 return;
             tabLayout.getTabAt(0).select();
             viewPager.setCurrentItem(0);
-            MapFragment fragment = ViewUtils.findFragment(getSupportFragmentManager(), MapFragment.class);
+            MapFragment fragment = AppUtils.findFragment(getSupportFragmentManager(), MapFragment.class);
             if (fragment != null)
                 fragment.moveToPoint(mapCoordinates);
         }

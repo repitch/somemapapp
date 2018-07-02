@@ -8,7 +8,7 @@ import android.support.v4.content.ContextCompat;
 
 import com.bobin.somemapapp.R;
 import com.bobin.somemapapp.model.DepositionPointClusterItem;
-import com.bobin.somemapapp.utils.ViewUtils;
+import com.bobin.somemapapp.utils.AppUtils;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -28,8 +28,8 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<DepositionPoin
     protected void onBeforeClusterItemRendered(DepositionPointClusterItem item, MarkerOptions markerOptions) {
         super.onBeforeClusterItemRendered(item, markerOptions);
         Drawable drawable = ContextCompat.getDrawable(context, R.drawable.map_marker);
-        int h = ((int) ViewUtils.dpToPixels(context, 41));
-        int w = ((int) ViewUtils.dpToPixels(context, 30));
+        int h = ((int) AppUtils.dpToPixels(context, 41));
+        int w = ((int) AppUtils.dpToPixels(context, 30));
         drawable.setBounds(0, 0, w, h);
         Bitmap bm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bm);

@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.AttributeSet;
 
-import com.bobin.somemapapp.utils.ViewUtils;
+import com.bobin.somemapapp.utils.AppUtils;
 
 public class MapAppTextView extends AppCompatTextView {
     public MapAppTextView(Context context) {
@@ -24,6 +24,6 @@ public class MapAppTextView extends AppCompatTextView {
     }
 
     private void init(Context context) {
-        setTypeface(ViewUtils.getCustomTypeface(context));
+        setTypeface(AppUtils.getCustomTypeface(context));
     }
 }

@@ -2,7 +2,6 @@ package com.bobin.somemapapp.ui.activity;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -27,6 +26,7 @@ import com.bobin.somemapapp.model.tables.Limit;
 import com.bobin.somemapapp.presenter.DepositionPointDetailPresenter;
 import com.bobin.somemapapp.ui.custom.ExpandHeader;
 import com.bobin.somemapapp.ui.view.DepositionPointDetailView;
+import com.bobin.somemapapp.utils.AppUtils;
 import com.bobin.somemapapp.utils.GoogleMapUtils;
 import com.bobin.somemapapp.utils.ViewUtils;
 
@@ -291,10 +291,10 @@ public class DepositionPointDetailActivity
     @Override
     public void showPartner(DepositionPartner partner, String icon) {
         setTitle(partner.getName());
-        description.setText(ViewUtils.toHtml(partner.getDescription()));
-        depositionTime.setText(ViewUtils.toHtml(partner.getDepositionDuration()));
-        depositionPointType.setText(ViewUtils.toHtml(partner.getPointType()));
-        oneTimeRestrictions.setText(ViewUtils.toHtml(partner.getLimitations()));
+        description.setText(AppUtils.toHtml(partner.getDescription()));
+        depositionTime.setText(AppUtils.toHtml(partner.getDepositionDuration()));
+        depositionPointType.setText(AppUtils.toHtml(partner.getPointType()));
+        oneTimeRestrictions.setText(AppUtils.toHtml(partner.getLimitations()));
 
         List<Limit> filtered = new ArrayList<>();
         for (Limit limit : partner.getLimits()) {

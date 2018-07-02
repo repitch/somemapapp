@@ -1,14 +1,7 @@
 package com.bobin.somemapapp.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.text.Html;
-import android.text.Spanned;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -17,37 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
-
-import java.util.List;
 
 // part of com.material.components project
 public final class ViewUtils {
-    @SuppressWarnings("unchecked")
-    public static <T extends Fragment> T findFragment(FragmentManager fragmentManager, Class<T> clazz) {
-        List<Fragment> fragments = fragmentManager.getFragments();
-
-        if (fragments == null)
-            return null;
-        for (Fragment fragment : fragments) {
-            if (fragment == null)
-                continue;
-            if (fragment.getClass().equals(clazz)) {
-                return (T) fragment;
-            }
-        }
-        return null;
-    }
-
     public static void expand(final View v) {
         Animation a = expandAction(v);
         v.startAnimation(a);
-    }
-
-    public static float dpToPixels(Context context, int dp) {
-        Resources r = context.getResources();
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
     }
 
     public static void collapse(final View v) {
@@ -80,26 +49,10 @@ public final class ViewUtils {
             View view = container.getChildAt(i);
             if (view instanceof TextView) {
                 TextView textView = (TextView) view;
-                Typeface myCustomFont = getCustomTypeface(context);
+                Typeface myCustomFont = AppUtils.getCustomTypeface(context);
                 textView.setTypeface(myCustomFont);
             }
         }
-    }
-
-    public static Typeface getCustomTypeface(Context context) {
-        return Typeface.createFromAsset(context.getAssets(), "SourceSansPro-Regular.ttf");
-    }
-
-    public static Spanned toHtml(String html) {
-        return Html.fromHtml(html);
-    }
-
-    public static void glideRoundImage(ImageView imageView, String url, RequestListener<Drawable> listener) {
-        Glide.with(imageView)
-                .load(url)
-                .apply(new RequestOptions().circleCrop())
-                .listener(listener)
-                .into(imageView);
     }
 
     public static void glideRoundImage(ImageView imageView, String url) {
