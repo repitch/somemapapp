@@ -1,6 +1,7 @@
 package com.bobin.somemapapp.infrastructure;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.bobin.somemapapp.R;
 
@@ -25,6 +26,12 @@ public class ExceptionsHandler {
             }
             return null;
         }
-        return context.getString(R.string.unknown_error);
+
+        logError(throwable);
+        return null;
+    }
+
+    private void logError(Throwable throwable) {
+        Log.e("ExceptionsHandler", "not handled error", throwable);
     }
 }
