@@ -126,9 +126,8 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
 
         for (int i = 0; i < currentData.size(); ++i) {
             DepositionPointsListAdapter.BindData data = currentData.get(i);
-            boolean newWatched = watchedSet.contains(data.getPoint().getExternalId());
-            if (newWatched) {
-                data.setWatched(newWatched);
+            if (watchedSet.contains(data.getPoint().getExternalId())) {
+                data.setWatched(true);
                 getViewState().updateElement(data, i);
             }
         }

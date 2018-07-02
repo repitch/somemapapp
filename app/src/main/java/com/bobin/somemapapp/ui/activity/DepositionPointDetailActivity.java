@@ -2,6 +2,7 @@ package com.bobin.somemapapp.ui.activity;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -94,6 +95,8 @@ public class DepositionPointDetailActivity
     TextView distance;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+    @BindView(R.id.show_on_map)
+    View showOnMapButton;
 
     @InjectPresenter
     DepositionPointDetailPresenter presenter;
@@ -144,10 +147,16 @@ public class DepositionPointDetailActivity
                     .putExtra(USER_LONGITUDE_KEY, userPosition.getLongitude());
         }
 
-        if (activityOptions == null)
-            activity.startActivityForResult(intent, requestCode);
+        if (requestCode == 0)
+            activity.startActivity(intent, optionsToBundle(activityOptions));
         else
-            activity.startActivityForResult(intent, requestCode, activityOptions.toBundle());
+            activity.startActivityForResult(intent, requestCode, optionsToBundle(activityOptions));
+    }
+
+    private static Bundle optionsToBundle(ActivityOptions options) {
+        if (options == null)
+            return null;
+        return options.toBundle();
     }
 
     @Override
@@ -162,6 +171,8 @@ public class DepositionPointDetailActivity
         notifyPresenterStart(getIntent());
         if (savedInstanceState != null)
             loadState(savedInstanceState);
+        boolean forResult = getCallingActivity() != null;
+        showOnMapButton.setVisibility(forResult ? View.VISIBLE : View.GONE);
     }
 
     private void loadState(Bundle savedInstanceState) {
