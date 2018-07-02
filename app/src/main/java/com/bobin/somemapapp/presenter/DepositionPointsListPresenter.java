@@ -17,7 +17,6 @@ import com.bobin.somemapapp.utils.GoogleMapUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -94,16 +93,12 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
 
     private List<DepositionPointsListAdapter.BindData> getBindData(List<DepositionPoint> points,
                                                                    HashMap<String, DepositionPartner> partners) {
-        List<String> pointsIds = CollectionUtils.map(points, DepositionPoint::getExternalId);
-        HashSet<String> watchedSet = watchedService.isWatched(pointsIds);
-
         List<DepositionPointsListAdapter.BindData> result = new ArrayList<>(points.size());
         for (DepositionPoint point : points) {
-            boolean watched = watchedSet.contains(point.getExternalId());
             DepositionPartner partner = partners.get(point.getPartnerName());
             DepositionPointsListAdapter.BindData bindData =
                     new DepositionPointsListAdapter.BindData(point,
-                            watched,
+                            watchedService.isWatched(point.getExternalId()),
                             partner.getName(),
                             urlCalculator.getPartnerPictureUrl(partner));
             result.add(bindData);
@@ -121,12 +116,9 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
         if (currentData == null)
             return;
 
-        HashSet<String> watchedSet = watchedService
-                .isWatched(CollectionUtils.map(currentData, x -> x.getPoint().getExternalId()));
-
         for (int i = 0; i < currentData.size(); ++i) {
             DepositionPointsListAdapter.BindData data = currentData.get(i);
-            if (watchedSet.contains(data.getPoint().getExternalId())) {
+            if (watchedService.isWatched(data.getPoint().getExternalId())) {
                 data.setWatched(true);
                 getViewState().updateElement(data, i);
             }

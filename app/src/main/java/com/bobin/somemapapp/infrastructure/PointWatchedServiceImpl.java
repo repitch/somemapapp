@@ -1,47 +1,43 @@
 package com.bobin.somemapapp.infrastructure;
 
 import com.bobin.somemapapp.model.tables.PointWatchState;
-import com.bobin.somemapapp.utils.CollectionUtils;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.HashMap;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class PointWatchedServiceImpl implements PointWatchedService {
-    @Override
-    public HashSet<String> isWatched(List<String> ids) {
-        String[] idsArray = CollectionUtils.toArray(ids);
+    private HashMap<String, Boolean> localCache;
 
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<PointWatchState> states = realm.where(PointWatchState.class)
-                .in("pointId", idsArray)
-                .findAll();
-
-        HashSet<String> result = new HashSet<>();
-
-        for (PointWatchState state : states) {
-            result.add(state.getPointId());
-        }
-
-        return result;
+    public PointWatchedServiceImpl() {
+        localCache = new HashMap<>();
     }
 
     @SuppressWarnings("ConstantConditions")
     @Override
     public boolean isWatched(String pointId) {
+        if (localCache.containsKey(pointId) && localCache.get(pointId))
+            return true;
+
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<PointWatchState> states = realm.where(PointWatchState.class)
+        long statesCount = realm.where(PointWatchState.class)
                 .equalTo("pointId", pointId)
-                .findAll();
-        return states.size() != 0;
+                .count();
+
+        boolean result = statesCount > 0;
+        realm.close();
+
+        localCache.put(pointId, result);
+        return result;
     }
 
     @Override
     public void setWatched(String pointId) {
+        localCache.put(pointId, true);
         PointWatchState pointWatchState = new PointWatchState();
         pointWatchState.setPointId(pointId);
-        Realm.getDefaultInstance().executeTransaction(r -> r.insertOrUpdate(pointWatchState));
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(r -> r.insertOrUpdate(pointWatchState));
+        realm.close();
     }
 }
