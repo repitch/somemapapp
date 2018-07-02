@@ -1,13 +1,16 @@
 package com.bobin.somemapapp.ui.fragment;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.transition.Fade;
+import android.support.v4.app.Fragment;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -52,9 +55,9 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
     private void onClick(View view) {
         if (clickListener != null)
             clickListener.onSheetClick(currentPoint, icon);
-
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         BottomSheetDialog dialog = (BottomSheetDialog) super.onCreateDialog(savedInstanceState);
@@ -73,11 +76,6 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
         return dialog;
     }
 
-    public PointDetailBottomSheet setClickListener(ClickListener clickListener) {
-        this.clickListener = clickListener;
-        return this;
-    }
-
     public static PointDetailBottomSheet newInstance(DepositionPoint point, String name, String iconUrl) {
         Bundle args = new Bundle();
         args.putSerializable(POINT_KEY, point);
@@ -86,6 +84,14 @@ public class PointDetailBottomSheet extends BottomSheetDialogFragment {
         PointDetailBottomSheet fragment = new PointDetailBottomSheet();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Fragment targetFragment = getTargetFragment();
+        if (targetFragment instanceof ClickListener)
+            clickListener = (ClickListener) targetFragment;
     }
 
     @Override

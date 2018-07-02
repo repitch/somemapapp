@@ -51,7 +51,10 @@ public class MapFragment
         implements OnMapReadyCallback,
         MapView,
         GoogleMap.OnCameraIdleListener,
-        GoogleMap.OnCameraMoveCanceledListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMyLocationChangeListener {
+        GoogleMap.OnCameraMoveCanceledListener,
+        GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnMyLocationChangeListener,
+        PointDetailBottomSheet.ClickListener {
 
     @InjectPresenter
     MapPresenter presenter;
@@ -162,8 +165,8 @@ public class MapFragment
         if (currentBottomSheet != null && currentBottomSheet.isAdded())
             currentBottomSheet.dismiss();
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
-        currentBottomSheet = PointDetailBottomSheet.newInstance(point, name, iconUrl)
-                .setClickListener(this::onBottomSheetClick);
+        currentBottomSheet = PointDetailBottomSheet.newInstance(point, name, iconUrl);
+        currentBottomSheet.setTargetFragment(this, 111);
         currentBottomSheet.show(fragmentManager, "PointDetailBottomSheet_" + name);
     }
 
@@ -183,14 +186,6 @@ public class MapFragment
     @Override
     public void inProgress(boolean value) {
         handler.post(() -> progressBar.setVisibility(value ? View.VISIBLE : View.GONE));
-    }
-
-    private void onBottomSheetClick(DepositionPoint point, View iconView) {
-        DepositionPointDetailActivity.start(
-                getActivity(),
-                point,
-                currentUserLocation,
-                iconView);
     }
 
     @Override
@@ -238,5 +233,14 @@ public class MapFragment
             moveToPoint(GoogleMapUtils.toCoordinates(location));
             firstLaunch = false;
         }
+    }
+
+    @Override
+    public void onSheetClick(DepositionPoint point, View iconView) {
+        DepositionPointDetailActivity.start(
+                getActivity(),
+                point,
+                currentUserLocation,
+                iconView);
     }
 }
