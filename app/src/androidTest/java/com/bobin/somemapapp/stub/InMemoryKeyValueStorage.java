@@ -28,7 +28,7 @@ public class InMemoryKeyValueStorage implements KeyValueStorage {
         return (long) hash.get(key);
     }
 
-    @Override
+    @Override // nullable
     public <T extends Serializable> T getSerializable(String key, Class<T> clazz) {
         return (T) hash.get(key);
     }

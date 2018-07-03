@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 
 import com.bobin.somemapapp.utils.AppUtils;
 
+// зачем этот наследник? шрифт можно установить просто через xml или стиль
+// https://developer.android.com/guide/topics/ui/look-and-feel/fonts-in-xml
 public class MapAppTextView extends AppCompatTextView {
     public MapAppTextView(Context context) {
         super(context);

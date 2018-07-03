@@ -16,7 +16,7 @@ import java.util.List;
 public class DepositionPointsListAdapter extends RecyclerView.Adapter<DepositionPointViewHolder> {
     private MapCoordinates userLocation;
     private PointClickListener clickListener;
-    private List<BindData> data;
+    private List<BindData> data; // = Collections.emptyList() и проверки на null не нужны
     private int lastPosition = -1;
 
     @NonNull
@@ -41,7 +41,7 @@ public class DepositionPointsListAdapter extends RecyclerView.Adapter<Deposition
         int meters = -1;
         if (userLocation != null)
             meters = (int) GoogleMapUtils.distanceBetween(userLocation, data.point.getMapCoordinates());
-        holder.bind(data, position, meters);
+        holder.bind(data, position, meters); // bind лучше чтобы делал либо adapter, либо делегат. Сам holder не должен этим заниматься
         setAnimation(holder.itemView, position);
     }
 

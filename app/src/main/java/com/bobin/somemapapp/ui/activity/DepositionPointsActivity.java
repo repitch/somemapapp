@@ -107,7 +107,8 @@ public class DepositionPointsActivity
                 return;
             tabLayout.getTabAt(0).select();
             viewPager.setCurrentItem(0);
-            MapFragment fragment = AppUtils.findFragment(getSupportFragmentManager(), MapFragment.class);
+            MapFragment fragment = AppUtils.findFragment(getSupportFragmentManager(), MapFragment.class); // искать фрагменты надо по тэгу.
+            // Что будешь делать, если на экране будет два инстанса MapFragment?
             if (fragment != null)
                 fragment.moveToPoint(mapCoordinates);
         }

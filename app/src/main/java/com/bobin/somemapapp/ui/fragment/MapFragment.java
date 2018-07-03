@@ -53,7 +53,8 @@ public class MapFragment
         GoogleMap.OnCameraIdleListener,
         GoogleMap.OnCameraMoveCanceledListener,
         GoogleMap.OnMarkerClickListener,
-        GoogleMap.OnMyLocationChangeListener,
+        GoogleMap.OnMyLocationChangeListener, // deprecated https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap.OnMyLocationChangeListener
+// вместо него FusedLocationProviderApi
         PointDetailBottomSheet.ClickListener {
 
     @InjectPresenter
@@ -73,7 +74,7 @@ public class MapFragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        FragmentActivity activity = getActivity();
+        FragmentActivity activity = getActivity(); // getActivity не надо, можно использовать context, который приходит в onAttach
         if (activity instanceof DepositionPointsChangedListener) {
             depositionPointsChangedListener = (DepositionPointsChangedListener) activity;
         }
@@ -95,9 +96,9 @@ public class MapFragment
                 .setColorFilter(ContextCompat.getColor(view.getContext(), R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
         FragmentActivity activity = getActivity();
-        if (activity == null)
+        if (activity == null) // в каком случае это условие выполнится?
             return;
-        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        FragmentManager fragmentManager = activity.getSupportFragmentManager(); // getChildFragmentManager()
         SupportMapFragment supportMapFragment = (SupportMapFragment) fragmentManager.findFragmentById(R.id.map_container);
 
         if (supportMapFragment == null) {
@@ -137,7 +138,7 @@ public class MapFragment
 
     @Override
     public void showPins(List<DepositionPoint> pins) {
-        if (clusterManager == null)
+        if (clusterManager == null) // в этом случае мы потеряем пины, надо дождаться onMapReady и тогда проставить
             return;
         clusterManager.clearItems();
 
@@ -167,7 +168,7 @@ public class MapFragment
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         currentBottomSheet = PointDetailBottomSheet.newInstance(point, name, iconUrl);
         currentBottomSheet.setTargetFragment(this, 111);
-        currentBottomSheet.show(fragmentManager, "PointDetailBottomSheet_" + name);
+        currentBottomSheet.show(fragmentManager, "PointDetailBottomSheet_" + name); // PointDetailBottomSheet.class.getSimpleName()
     }
 
     @Override
@@ -207,6 +208,7 @@ public class MapFragment
 
         VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
 
+        // почему не использовать VisibleRegion? Что решает CameraBounds?
         CameraBounds cameraBounds = new CameraBounds(
                 GoogleMapUtils.toCoordinates(visibleRegion.farLeft),
                 GoogleMapUtils.toCoordinates(visibleRegion.nearRight),

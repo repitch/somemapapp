@@ -65,6 +65,8 @@
             tools:text="ТЦ Кит, 1 этаж, зона банкомато" />
     </RelativeLayout>
 
+    <!-- Для RecyclerView надо использовать ItemDecorator. В данном случае, например
+    у последнего item этого разделителя быть не должно -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"

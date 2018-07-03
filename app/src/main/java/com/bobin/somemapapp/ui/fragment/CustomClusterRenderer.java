@@ -35,6 +35,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<DepositionPoin
         Canvas canvas = new Canvas(bm);
         drawable.draw(canvas);
         BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromBitmap(bm);
+        // все что выше - в конструктор, здесь только выставление иконки
         markerOptions.icon(bitmapDescriptor);
     }
 }

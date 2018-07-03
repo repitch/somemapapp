@@ -9,7 +9,7 @@ import java.util.List;
 public class DepositionPartnerResponse implements Serializable {
 
     @SerializedName("id")
-    @Expose
+    @Expose // не обязательно у всех полей писать @Expose
     private String id;
     @SerializedName("name")
     @Expose

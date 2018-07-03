@@ -19,7 +19,7 @@ public class CurrencyResponse implements Serializable {
 
     public void setCode(int code) {
         this.code = code;
-    }
+    } // для чего сеттеры? Вообще response желательно делать иммутабельным
 
     public String getName() {
         return name;

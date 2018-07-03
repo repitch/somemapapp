@@ -55,7 +55,7 @@ public class PointsCacheImpl implements PointsCache {
         PointsCircle outerCircle = findOuterCircleOrNull(targetCircle);
         if (outerCircle == null) {
             Log.d("PointsCacheImpl", "no cache");
-            return null;
+            return null; // Collections.emptyList
         }
         if (timeExpired(outerCircle)) {
             Log.d("PointsCacheImpl", "circle expired");

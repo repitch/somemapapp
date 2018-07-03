@@ -28,6 +28,7 @@ public final class AppUtils {
         return null;
     }
 
+    // dp * Resources.getSystem().getDisplayMetrics().density); без контекста
     public static float dpToPixels(Context context, int dp) {
         Resources r = context.getResources();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
@@ -37,6 +38,7 @@ public final class AppUtils {
         return Typeface.createFromAsset(context.getAssets(), "SourceSansPro-Regular.ttf");
     }
 
+    // не очень полезный метод
     public static Spanned toHtml(String html) {
         return Html.fromHtml(html);
     }

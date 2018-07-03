@@ -75,7 +75,7 @@ public final class GoogleMapUtils {
 
     public static String distanceToString(Context context, int meters) {
         if (meters < 1000)
-            return meters + " " + context.getString(R.string.meters);
+            return meters + " " + context.getString(R.string.meters); // получение форматированной строки + plurals
 
         String format = new DecimalFormat("#.#").format(meters / 1000d);
         return format + " " + context.getString(R.string.km);

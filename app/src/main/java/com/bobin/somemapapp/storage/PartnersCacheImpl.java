@@ -21,7 +21,7 @@ public class PartnersCacheImpl implements PartnersCache {
         this.clock = clock;
     }
 
-    @Override
+    @Override // nullable
     public DepositionPartner getPartnerByIdOrNull(String id) {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<DepositionPartner> partners = realm.where(DepositionPartner.class)
@@ -43,7 +43,7 @@ public class PartnersCacheImpl implements PartnersCache {
                 .findAll();
 
         if (ids.length != 0 && partnersFromRealm.size() == 0)
-            return null;
+            return null; // лучше возвращать пустую мапу, зачем лишние проблемы с null?
 
         List<DepositionPartner> partners = realm.copyFromRealm(partnersFromRealm);
         HashMap<String, DepositionPartner> result = new HashMap<>();
@@ -68,6 +68,6 @@ public class PartnersCacheImpl implements PartnersCache {
     public boolean isExpired() {
         long now = clock.currentTimeInMillis();
         long lastUpdate = keyValueStorage.getLong(PARTNERS_UPDATE_KEY);
-        return now - lastUpdate > 1000 * 60 * 10;
+        return now - lastUpdate > 1000 * 60 * 10; // TimeUnit + лучше выделять время протухания в отдельный метод
     }
 }

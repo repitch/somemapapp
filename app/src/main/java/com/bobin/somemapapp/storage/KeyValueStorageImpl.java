@@ -12,9 +12,10 @@ public class KeyValueStorageImpl implements KeyValueStorage {
     private final SharedPreferences prefs;
     private final Gson gson;
 
+    // @Inject
     public KeyValueStorageImpl(Context context) {
         prefs = context.getSharedPreferences("appPrefs", Context.MODE_PRIVATE);
-        gson = new Gson();
+        gson = new Gson(); // инжектить Gson?
     }
 
     @Override

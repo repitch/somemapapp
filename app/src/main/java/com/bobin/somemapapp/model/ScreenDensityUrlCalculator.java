@@ -27,6 +27,7 @@ public class ScreenDensityUrlCalculator {
     }
 
     public String getPartnerPictureUrl(DepositionPartner partner) {
+        // String.format? context.getString(id, param1, param2) ?
         return BuildConfig.ICONS_ENDPOINT + getStringValue() + "/" + partner.getPicture();
     }
 }

@@ -17,6 +17,7 @@ public final class CollectionUtils {
         return result;
     }
 
+    // для всего этого есть com.google.common.collect например
     public static <T> List<T> filter(Collection<T> source, Func1<T, Boolean> predicate) {
         List<T> result = new ArrayList<>(source.size() / 2);
         for (T item : source)

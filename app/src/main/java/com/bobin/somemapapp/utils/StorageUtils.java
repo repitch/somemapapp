@@ -12,6 +12,7 @@ import com.bobin.somemapapp.model.tables.Limit;
 import java.util.ArrayList;
 import java.util.List;
 
+// Maybe лучше для gson добавить кастомный десериализатор?
 public final class StorageUtils {
     public static DepositionPoint convert(DepositionPointResponse response) {
         DepositionPoint depositionPoint = new DepositionPoint();

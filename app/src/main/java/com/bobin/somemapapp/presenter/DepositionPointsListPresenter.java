@@ -58,8 +58,8 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
                         float dy = GoogleMapUtils.distanceBetween(y.getMapCoordinates(), userLocation);
                         return Float.compare(dx, dy);
                     })
-                    .toList()
-                    .blockingGet();
+                    .toList() // toSortedList сразу
+                    .blockingGet(); // blocking get плохо
         } else {
             sortedPoints = points;
         }
@@ -83,7 +83,7 @@ public class DepositionPointsListPresenter extends MvpPresenter<DepositionPoints
     }
 
     private Single<List<DepositionPointsListAdapter.BindData>> getBindingDataAsync(List<DepositionPoint> points) {
-        List<String> partnersIds = CollectionUtils.map(points, DepositionPoint::getPartnerName);
+        List<String> partnersIds = CollectionUtils.map(points, DepositionPoint::getPartnerName); // это можно делать в цепочке rx
 
         return partnersService
                 .getPartnersByIds(partnersIds)

@@ -31,7 +31,7 @@ import butterknife.Unbinder;
 public class DepositionPointsListFragment
         extends MvpAppCompatFragment
         implements DepositionPointsListView, DepositionPointsListAdapter.PointClickListener {
-    public static final int DETAIL_REQUEST = 845;
+    public static final int DETAIL_REQUEST = 845; // к чему эти большие числа?
 
     @BindView(R.id.deposition_points_list)
     RecyclerView recyclerView;

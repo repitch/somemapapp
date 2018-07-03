@@ -19,7 +19,7 @@ public class PointWatchedServiceImpl implements PointWatchedService {
         if (localCache.containsKey(pointId) && localCache.get(pointId))
             return true;
 
-        Realm realm = Realm.getDefaultInstance();
+        Realm realm = Realm.getDefaultInstance(); // лучше провайдить через Dagger
         long statesCount = realm.where(PointWatchState.class)
                 .equalTo("pointId", pointId)
                 .count();

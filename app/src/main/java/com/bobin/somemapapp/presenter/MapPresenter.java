@@ -89,9 +89,9 @@ public class MapPresenter extends MvpPresenter<MapView> {
         super.onFirstViewAttach();
         Disposable subscribe = cameraBoundsPublishSubject
                 .debounce(1L, TimeUnit.SECONDS)
-                .flatMap(x -> {
+                .flatMap(x -> { // что за x?
                     getViewState().inProgress(true);
-                    if (needLoadPoints(x))
+                    if (needLoadPoints(x)) // if {} всегда
                         return getDepositionPoints(x).observeOn(Schedulers.io());
                     currentScreenData.cameraBounds = x;
                     return Observable.just(currentScreenData);
@@ -99,13 +99,13 @@ public class MapPresenter extends MvpPresenter<MapView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(x -> {
                     getViewState().inProgress(false);
-                    if (x.isSuccess()) {
+                    if (x.isSuccess()) { // нужно, чтобы толко isSuccess попадал в onresult. В противном случае -> onError
                         getViewState().showPins(x.pointsFromBounds(clock));
                         currentScreenData = x;
                     } else {
                         handleThrowable(x.error);
                     }
-                });
+                }); // обработка onError должна быть
         compositeDisposable.add(subscribe);
     }
 
@@ -136,7 +136,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
         final PointsCircle pointsCircle = GoogleMapUtils.toCircle(bounds, clock);
 
         return depositionPointsService.getPoints(pointsCircle)
-                .map(x -> new BoundsWithPoints(x, bounds))
+                .map(x -> new BoundsWithPoints(x, bounds)) // везде непонятный x, переменные надо называть
                 .onErrorResumeNext(t -> Single.just(new BoundsWithPoints(t)))
                 .toObservable();
     }
@@ -144,7 +144,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        compositeDisposable.dispose();
+        compositeDisposable.dispose(); // это можно вынести в базовый класс, чтобы не дублировать в каждом Presenter
     }
 
     public void clickOnMarker(double latitude, double longitude) {
@@ -174,6 +174,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
         keyValueStorage.save(LAST_SCREEN_POSITION_KEY, mapCoordinates);
     }
 
+    // nullable
     private DepositionPoint findPoint(double latitude, double longitude) {
         if (currentScreenData == null)
             return null;
@@ -189,6 +190,7 @@ public class MapPresenter extends MvpPresenter<MapView> {
         List<DepositionPoint> points;
         Throwable error;
 
+        // вероятно этой обертки удастся избежать, если использовать флаг delayError = true?
         BoundsWithPoints(Throwable error) {
             this.error = error;
         }

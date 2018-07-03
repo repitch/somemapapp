@@ -120,6 +120,8 @@ public class DepositionPointDetailActivity
         start(activity, point, userPosition, iconView, 0);
     }
 
+    // лучше в Activity оставлять метод createIntent, который соберет параметры и вернет Intent
+    // запускать startActivity или startActivityForResult уже должны из того места, кто вызывает
     public static void start(@Nonnull Activity activity,
                              @Nonnull DepositionPoint point,
                              @Nullable MapCoordinates userPosition,
@@ -205,7 +207,7 @@ public class DepositionPointDetailActivity
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && intent.hasExtra(TRANSITION_NAME_KEY))
-            partnerIcon.setTransitionName(intent.getStringExtra(TRANSITION_NAME_KEY));
+            partnerIcon.setTransitionName(intent.getStringExtra(TRANSITION_NAME_KEY)); // ViewCompat.setTransitionName();
 
         address.setText(pointAddress);
 
@@ -255,7 +257,7 @@ public class DepositionPointDetailActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbinder.unbind();
+        unbinder.unbind(); // тоже дублируется, можно было вынести в BaseActivity
     }
 
     private void toggleSection(ExpandHeader header, final View content) {

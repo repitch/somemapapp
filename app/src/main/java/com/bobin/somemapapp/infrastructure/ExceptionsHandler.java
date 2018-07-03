@@ -22,7 +22,7 @@ public class ExceptionsHandler {
             long now = clock.currentTimeInMillis();
             if (now - lastNetworkMessage > 1000 * 60 /* 1 minute */) {
                 lastNetworkMessage = now;
-                return context.getString(R.string.no_internet);
+                return context.getString(R.string.no_internet); // для отсутствующего интернет-соединения есть нормальный способ проверки (слушать BroadCast)
             }
             return null;
         }
